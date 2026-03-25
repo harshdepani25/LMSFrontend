@@ -20,7 +20,7 @@ import {
   getSubCategory,
   updateSubCategory,
 } from "../../../Redux/slice/SubCategorySlice";
-import { getCategory } from "../../../Redux/slice/CategorySlice";
+import { getCategory } from "../../../redux/slice/CategorySlice";
 
 function SubCategory(props) {
   const [open, setOpen] = useState(false);

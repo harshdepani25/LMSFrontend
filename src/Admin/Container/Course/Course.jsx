@@ -8,7 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { mixed, object, string } from "yup";
 import { Form, Formik, useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { getCategory } from "../../../Redux/slice/CategorySlice";
+import { getCategory } from "../../../redux/slice/CategorySlice";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Stack from "@mui/material/Stack";
