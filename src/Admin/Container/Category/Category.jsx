@@ -14,7 +14,7 @@ import {
   deletCategroy,
   getCategory,
   updateCategroy,
-} from "../../../Redux/slice/CategorySlice";
+} from "../../../redux/slice/CategorySlice";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Stack from "@mui/material/Stack";
