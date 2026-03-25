@@ -15,7 +15,7 @@ function Header(props) {
   const isdark = themedata.theme === "light";
   console.log(isdark);  
 
-  const [checked, setChecked] = React.useState(true);
+  const [checked, setChecked] = React.useState(true); 
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
