@@ -10,6 +10,7 @@ import InstructorDashboard from "../container/InstructorDashboard/InstructorDash
 import { CheackAuth } from "../redux/slice/auth.slice.js";
 import { useDispatch } from "react-redux";
 import { ThemeContext } from "../context/ThemeContext.jsx";
+import Category from "../container/Category/Category.jsx";
 
 function UserRouter(props) {
   const themedata = useContext(ThemeContext);
@@ -28,6 +29,7 @@ function UserRouter(props) {
         <Route path="/auth/:logtype" element={<Auth />} />
         <Route path="/" element={<Home />} />
         <Route path="/instructor-dashboard" element={<InstructorDashboard />} />
+        <Route path="/category" element={<Category />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
