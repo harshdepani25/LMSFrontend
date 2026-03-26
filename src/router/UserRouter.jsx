@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { ThemeContext } from "../context/ThemeContext.jsx";
 import Category from "../container/Category/Category.jsx";
 
-function UserRouter(props) {
+function UserRouter() {
   const themedata = useContext(ThemeContext);
 
 
