@@ -7,7 +7,10 @@ function Category() {
 
   return (
     <div className="tab-content" id="course-pills-tabContent">
-      {/* Content START */}
+        {/* {
+            cateData.map((v) => )
+        } */}
+
       <div
         className="tab-pane fade show active"
         id="course-pills-tabs-1"
