@@ -26,15 +26,12 @@ function Category() {
                 {/* Card body */}
                 <div className="card-body pb-0">
                   {/* Badge and favorite */}
-                  <div className="d-flex justify-content-between mb-2">
-                  </div>
+                  <div className="d-flex justify-content-between mb-2"></div>
                   {/* Title */}
                   <h5 className="card-title fw-normal">
                     <a href="#">{v.name}</a>
                   </h5>
-                  <p className="mb-2 text-truncate-2">
-                    {v.desciption}
-                  </p>
+                  <p className="mb-2 text-truncate-2">{v.desciption}</p>
                 </div>
               </div>
             </div>
