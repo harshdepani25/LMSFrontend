@@ -24,7 +24,7 @@ import TextForm from "../../Component/TextForm/TextForm";
 import FileUpload from "../../Component/FileUpload/FileUpload";
 import { IMAGE_URL } from "../../../utility/url";
 
-function Category(props) {
+function Category() {
   const cdata = useSelector((state) => state.category);
   console.log(cdata.category);
 
