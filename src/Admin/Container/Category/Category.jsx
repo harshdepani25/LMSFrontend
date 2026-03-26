@@ -62,7 +62,7 @@ function Category() {
         if(typeof value?.url === 'string'){
           return true;
         }
-        
+
         return value.size <= 2 * 1024 * 1024;
       }),
   });
@@ -201,7 +201,7 @@ function Category() {
         pageSizeOptions={[5, 10]}
         checkboxSelection
         sx={{ border: 0 }}
-        getRowId={(row) => row._id}
+        getRowId={(row) => row?._id}
       />
     </React.Fragment>
   );

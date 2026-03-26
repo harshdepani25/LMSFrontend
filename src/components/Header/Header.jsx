@@ -9,13 +9,13 @@ import { styled } from "@mui/material/styles";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { getCategory } from "../../redux/slice/CategorySlice.js";
 
-function Header(props) { 
+function Header(props) {
   const themedata = useContext(ThemeContext);
 
   const isdark = themedata.theme === "light";
-  console.log(isdark);  
+  console.log(isdark);
 
-  const [checked, setChecked] = React.useState(true); 
+  const [checked, setChecked] = React.useState(true);
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -159,78 +159,91 @@ function Header(props) {
                     console.log(secCat);
 
                     return (
-                      <li
-                        className={
-                          secCat.length > 0 ? "dropdown-submenu dropend" : ""
-                        }
-                      >
-                        <a
+                      <>
+                        <li
                           className={
-                            secCat.length > 0
-                              ? "dropdown-item dropdown-toggle"
-                              : "dropdown-item"
+                            secCat.length > 0 ? "dropdown-submenu dropend" : ""
                           }
-                          href="#"
                         >
-                          {v.name}
-                        </a>
-
-                        {secCat && (
-                          <ul
-                            className="dropdown-menu dropdown-menu-start"
-                            data-bs-popper="none"
+                          <a
+                            className={
+                              secCat.length > 0
+                                ? "dropdown-item dropdown-toggle"
+                                : "dropdown-item"
+                            }
+                            href="#"
                           >
-                            {secCat.map((sc) => {
-                              const thCat = cateData.category.filter(
-                                (tc) => tc.parent_id === sc._id,
-                              );
-                              console.log(thCat);
+                            {v.name}
+                          </a>
 
-                              return (
-                                <li
-                                  className={
-                                    thCat.length > 0
-                                      ? "dropdown-submenu dropend"
-                                      : ""
-                                  }
-                                >
-                                  <a
+                          {secCat && (
+                            <ul
+                              className="dropdown-menu dropdown-menu-start"
+                              data-bs-popper="none"
+                            >
+                              {secCat.map((sc) => {
+                                const thCat = cateData.category.filter(
+                                  (tc) => tc.parent_id === sc._id,
+                                );
+                                console.log(thCat);
+
+                                return (
+                                  <li
                                     className={
                                       thCat.length > 0
-                                        ? "dropdown-item dropdown-toggle"
-                                        : "dropdown-item"
+                                        ? "dropdown-submenu dropend"
+                                        : ""
                                     }
-                                    href="#"
                                   >
-                                    {sc.name}
-                                  </a>
-
-                                  {thCat && (
-                                    <ul
-                                      className="dropdown-menu dropdown-menu-start"
-                                      data-bs-popper="none"
+                                    <a
+                                      className={
+                                        thCat.length > 0
+                                          ? "dropdown-item dropdown-toggle"
+                                          : "dropdown-item"
+                                      }
+                                      href="#"
                                     >
-                                      {thCat.map((tc) => (
-                                        <li
-                                          className={
-                                            thCat.length > 0
-                                              ? "dropdown-submenu dropend"
-                                              : ""
-                                          }
-                                        >
-                                          <a className="dropdown-item" href="#">
-                                            {tc.name}
-                                          </a>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  )}
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        )}
-                      </li>
+                                      {sc.name}
+                                    </a>
+
+                                    {thCat && (
+                                      <ul
+                                        className="dropdown-menu dropdown-menu-start"
+                                        data-bs-popper="none"
+                                      >
+                                        {thCat.map((tc) => (
+                                          <li
+                                            className={
+                                              thCat.length > 0
+                                                ? "dropdown-submenu dropend"
+                                                : ""
+                                            }
+                                          >
+                                            <a
+                                              className="dropdown-item"
+                                              href="#"
+                                            >
+                                              {tc.name}
+                                            </a>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    )}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
+                        </li>
+                        <li className={"dropdown-submenu dropend"}>
+                          <a
+                            className={"dropdown-item dropdown-toggle"}
+                            href="#"
+                          >
+                            All Category
+                          </a>
+                        </li>
+                      </>
                     );
                   })}
                 </ul>
