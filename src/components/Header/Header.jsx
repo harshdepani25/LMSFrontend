@@ -236,10 +236,8 @@ function Header(props) {
                           )}
                         </li>
                         <li className={"dropdown-submenu dropend"}>
-                          <a
-                            className={"dropdown-item dropdown-toggle"}
-                            href="#"
-                          >
+                          {" "}
+                          <a className={"dropdown-item"} href="#">
                             All Category
                           </a>
                         </li>
