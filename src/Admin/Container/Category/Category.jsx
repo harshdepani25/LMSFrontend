@@ -45,17 +45,24 @@ function Category() {
   const CategroySchema = object({
     name: string().required(),
     desciption: string().required(),
-    category_img: mixed()
+    category_img:  mixed()
       .test("pfp", "File Must be have a png, jpg and jpeg", function (value) {
-        console.log(value);
+        console.log("imgval", value);
+        if(typeof value?.url === 'string'){
+          return true;
+        }
 
         const supFiles = ["image/jpeg", "image/jpg", "image/png"];
 
-        return supFiles.includes(value.type.toLowerCase());
+        return supFiles.includes(value?.type?.toLowerCase());
       })
       .test("pfp", "File Must be have less than 2 MB", function (value) {
         console.log(value);
 
+        if(typeof value?.url === 'string'){
+          return true;
+        }
+        
         return value.size <= 2 * 1024 * 1024;
       }),
   });
