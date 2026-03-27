@@ -8,8 +8,12 @@ import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { getCategory } from "../../redux/slice/CategorySlice.js";
+import { useGetallcourseQuery } from "../../redux/Api/Course.api.js";
 
 function Header(props) {
+  const { data, error, isLoading } = useGetallcourseQuery();
+  console.log(data?.data);
+
   const themedata = useContext(ThemeContext);
 
   const isdark = themedata.theme === "light";
@@ -235,17 +239,15 @@ function Header(props) {
                             </ul>
                           )}
                         </li>
-                        
                       </>
                     );
                   })}
                   <li className={"dropdown-submenu dropend"}>
-                          {" "}
-                          <a className={"dropdown-item"} href="#"><NavLink to={"/category"} >
-                           All Category
-                          </NavLink></a>
-                          
-                        </li>
+                    {" "}
+                    <a className={"dropdown-item"} href="#">
+                      <NavLink to={"/category"}>All Category</NavLink>
+                    </a>
+                  </li>
                 </ul>
               </li>
             </ul>
@@ -431,77 +433,20 @@ function Header(props) {
                   {/* Dropdown submenu */}
                   <li className="dropdown-submenu dropend">
                     <a className="dropdown-item dropdown-toggle" href="#">
-                      Course
+                      <NavLink to={"/course"}>Course</NavLink>
                     </a>
                     <ul
                       className="dropdown-menu dropdown-menu-start"
                       data-bs-popper="none"
                     >
-                      <li>
-                        {" "}
-                        <a className="dropdown-item" href="course-grid.html">
-                          Course Grid Classic
-                        </a>
-                      </li>
-                      <li>
-                        {" "}
-                        <a className="dropdown-item" href="course-grid-2.html">
-                          Course Grid Minimal
-                        </a>
-                      </li>
-                      <li>
-                        {" "}
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        {" "}
-                        <a className="dropdown-item" href="course-list.html">
-                          Course List Classic
-                        </a>
-                      </li>
-                      <li>
-                        {" "}
-                        <a className="dropdown-item" href="course-list-2.html">
-                          Course List Minimal
-                        </a>
-                      </li>
-                      <li>
-                        {" "}
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        {" "}
-                        <a className="dropdown-item" href="course-detail.html">
-                          Course Detail Classic
-                        </a>
-                      </li>
-                      <li>
-                        {" "}
-                        <a
-                          className="dropdown-item"
-                          href="course-detail-min.html"
-                        >
-                          Course Detail Minimal
-                        </a>
-                      </li>
-                      <li>
-                        {" "}
-                        <a
-                          className="dropdown-item"
-                          href="course-detail-adv.html"
-                        >
-                          Course Detail Advance
-                        </a>
-                      </li>
-                      <li>
-                        {" "}
-                        <a
-                          className="dropdown-item"
-                          href="course-video-player.html"
-                        >
-                          Course Full Screen Video
-                        </a>
-                      </li>
+                      {data?.data?.map((v) => (
+                        <li>
+                          {" "}
+                          <a className="dropdown-item" href="course-grid.html">
+                            {v.name}
+                          </a>
+                        </li>
+                      ))}
                     </ul>
                   </li>
                   {/* Dropdown submenu */}

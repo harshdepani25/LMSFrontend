@@ -120,7 +120,7 @@ function Course(props) {
       renderCell: (params) => (
         <img
           src={
-            params.row.course_img.includes("blob")
+            params.row.course_img?.includes("blob")
               ? params.row.course_img
               : IMAGE_URL + params.row.course_img
           }

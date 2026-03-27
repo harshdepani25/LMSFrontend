@@ -1,15 +1,16 @@
-import { useSelector } from "react-redux";
+import React from "react";
+import { useGetallcourseQuery } from "../../redux/Api/Course.api";
 import useSerch from "../../Hook/useSerch";
 
-function Category() {
-  const cateData = useSelector((state) => state.category);
-  console.log("Catdata", cateData.category);
+function Course(props) {
+  const { data, error, isLoading } = useGetallcourseQuery();
+  console.log(data?.data);
 
-  const { search, setSeach, filterData } = useSerch(cateData.category, [
-    "name",
-    "desciption",
-  ]);
-  console.log(search);
+   const { search, setSeach, filterData } = useSerch(data?.data, [
+      "name",
+      "desciption",
+    ]);
+    console.log(search);
 
   return (
     <>
@@ -45,7 +46,7 @@ function Category() {
               <div className="col-sm-6 col-lg-4 col-xl-3">
                 <div className="card shadow h-100">
                   <img
-                    src={v.category_img.url}
+                    src={v.category_img}
                     className="card-img-top"
                     alt="course image"
                   />
@@ -66,4 +67,4 @@ function Category() {
   );
 }
 
-export default Category;
+export default Course;

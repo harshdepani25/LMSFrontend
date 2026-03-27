@@ -11,6 +11,7 @@ import { CheackAuth } from "../redux/slice/auth.slice.js";
 import { useDispatch } from "react-redux";
 import { ThemeContext } from "../context/ThemeContext.jsx";
 import Category from "../container/Category/Category.jsx";
+import Course from "../container/Course/Course.jsx";
 
 function UserRouter() {
   const themedata = useContext(ThemeContext);
@@ -30,6 +31,7 @@ function UserRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/instructor-dashboard" element={<InstructorDashboard />} />
         <Route path="/category" element={<Category />} />
+        <Route path="/course" element={<Course />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
