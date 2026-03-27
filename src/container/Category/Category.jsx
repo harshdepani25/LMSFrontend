@@ -5,19 +5,19 @@ function Category() {
   const cateData = useSelector((state) => state.category);
   console.log(cateData.category);
 
-  const [Search, setSeach] = useState(" ");
+  const [Search, setSeach] = useState("");
   console.log(Search);
 
 
   const handleFilter = () => {
-        let search = []
-        search = cateData?.category?.filter((v) => 
+        // let search = []
+        return cateData?.category?.filter((v) => 
             v.name?.toLowerCase().includes(Search?.toLowerCase()) ||
             v.desciption?.toLowerCase().includes(Search?.toLowerCase()) 
         )
-         console.log("search", search);
+        //  console.log("search", search);
 
-        return search;
+        // return search;
     }
 
     const filterData = handleFilter()
