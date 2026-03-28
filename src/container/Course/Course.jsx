@@ -46,7 +46,7 @@ function Course(props) {
               <div className="col-sm-6 col-lg-4 col-xl-3">
                 <div className="card shadow h-100">
                   <img
-                    src={v.category_img?.url}
+                    src={v.course_img?.url}
                     className="card-img-top"
                     alt="course image"
                   />
