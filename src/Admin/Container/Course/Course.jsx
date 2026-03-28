@@ -22,7 +22,7 @@ import {
   useGetallcourseQuery,
   useUpdateCourseMutation,
 } from "../../../redux/Api/Course.api";
-import { IMAGE_URL } from "../../../utility/url";
+// import { IMAGE_URL } from "../../../utility/url";
 import SwitchBtn from "../../Component/SwitchBtn/SwitchBtn";
 import Switch from "@mui/material/Switch";
 
@@ -119,7 +119,7 @@ function Course(props) {
       width: 130,
       renderCell: (params) => (
         <img
-          src={params.row.course_img.url
+          src={params.row.course_img?.url
             // params.row.course_img.url?.includes("blob")
             //   ? params.row.course_img.url
             //   : IMAGE_URL + params.row.course_img
