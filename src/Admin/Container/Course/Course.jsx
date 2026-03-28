@@ -119,10 +119,10 @@ function Course(props) {
       width: 130,
       renderCell: (params) => (
         <img
-          src={
-            params.row.course_img.url?.includes("blob")
-              ? params.row.course_img.url
-              : IMAGE_URL + params.row.course_img
+          src={params.row.course_img.url
+            // params.row.course_img.url?.includes("blob")
+            //   ? params.row.course_img.url
+            //   : IMAGE_URL + params.row.course_img
           }
           width={"50px"}
           height={"50px"}
