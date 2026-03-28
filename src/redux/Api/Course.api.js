@@ -70,7 +70,7 @@ export const courseApi = createApi({
                 categories_id: data.get("categories_id"),
                 name: data.get("name"),
                 desciption: data.get("desciption"),
-                course_img:
+                course_img: 
                   typeof data.get("course_img") === "string"
                     ? data.get("course_img")
                     : URL.createObjectURL(data.get("course_img")),
