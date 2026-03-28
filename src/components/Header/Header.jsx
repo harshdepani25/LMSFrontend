@@ -432,7 +432,7 @@ function Header(props) {
                 <ul className="dropdown-menu" aria-labelledby="pagesMenu">
                   {/* Dropdown submenu */}
                   <li className="dropdown-submenu dropend">
-                    <a className="dropdown-item dropdown-toggle" href="#">
+                    <a className="dropdown-item dropdown-toggle" href="/course">
                       <NavLink to={"/course"}>Course</NavLink>
                     </a>
                     <ul
