@@ -6,7 +6,7 @@ import Layout from "../Admin/Component/Layout/Layout";
 import Course from "../Admin/Container/Course/Course";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ThemeContext } from "../context/ThemeContext";
-// import subcategory from "../Admin/Container/SubCategory/SubCategory"
+import Section from "../Admin/Container/Section/Section";
 
 function AdminRouet(props) {
   const Theme = useContext(ThemeContext);
@@ -29,7 +29,7 @@ function AdminRouet(props) {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/category" element={<Category />} />
-          {/* <Route path="/subCategory" element={<subcategory />} /> */}
+          <Route path="/section" element={<Section />} />
           <Route path="/course" element={<Course />} />
         </Routes>
       </Layout>

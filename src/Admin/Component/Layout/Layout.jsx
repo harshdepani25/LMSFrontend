@@ -110,8 +110,8 @@ const Drawer = styled(MuiDrawer, {
 const listBox = [
   { label: "Dashboard", icon: <DashboardIcon />, to: "/admin/" },
   { label: "Category", icon: <CategoryIcon />, to: "/admin/category" },
-  { label: "subCategory", icon: <AppsIcon />, to: "/admin/subcategory" },
   { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
+  { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
 ];
 
 export default function Layout({ children }) {

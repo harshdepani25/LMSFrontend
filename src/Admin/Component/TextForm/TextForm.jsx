@@ -9,7 +9,9 @@ function TextForm({ type = "text", data = [], ...props }) {
 
   console.log("field:", field);
   console.log("meta:", meta);
-  console.log(data, props);
+  console.log("data", data);
+  console.log("props", props);
+  
   
   // console.log("props", props);
 
