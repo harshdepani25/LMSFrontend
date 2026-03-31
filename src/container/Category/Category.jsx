@@ -1,11 +1,12 @@
 import { useSelector } from "react-redux";
 import useSerch from "../../Hook/useSerch";
+import withReduxFeach from "../../hoc/withReduxFeach";
+import { getCategory } from "../../redux/slice/CategorySlice";
 
-function Category() {
-  const cateData = useSelector((state) => state.category);
-  console.log("Catdata", cateData.category);
+function Category({ category }) {
+  console.log("Catdata", category);
 
-  const { search, setSeach, filterData } = useSerch(cateData.category, [
+  const { search, setSeach, filterData } = useSerch(category, [
     "name",
     "desciption",
   ]);
@@ -66,4 +67,4 @@ function Category() {
   );
 }
 
-export default Category;
+export default withReduxFeach(Category, getCategory, (state) => state.category);
