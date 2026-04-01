@@ -23,7 +23,7 @@ function Header(props) {
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
-    themedata.toggletheme(!themedata.theme);
+    themedata.toggletheme(themedata.theme);
   };
 
   console.log("themedata", themedata);
