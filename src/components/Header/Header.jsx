@@ -1254,7 +1254,7 @@ function Header(props) {
                     onChange={handleChange}
                     slotProps={{ input: { "aria-label": "controlled" } }}
                   />
-                  <span>{`${themedata?.theme === "light" ? "Light" : "Dark"} Mode`}</span>
+                  <span>{`${themedata?.theme === "light" ? "Dark" : "Light"} Mode`}</span>
                 </div>
               </li>
               {/* Dark mode switch END */}
