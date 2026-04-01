@@ -13,7 +13,7 @@ export const ThemeProvider = ({ children }) => {
     const [state, dispatch] = useReducer(themereducer, initialValues);
 
     const toggletheme = (val) => {
-        dispatch({ type: TOGGLE_THEME, payload: val === 'light' ? 'light' : 'dark' })
+        dispatch({ type: TOGGLE_THEME, payload: val === 'light' ? 'dark' : 'light' })
     }
 
     return (
