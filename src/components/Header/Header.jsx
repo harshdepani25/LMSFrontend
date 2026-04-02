@@ -447,6 +447,12 @@ function Header(props) {
                           </a>
                         </li>
                       ))}
+                      <li className={"dropdown-submenu dropend"}>
+                        {" "}
+                        <a className={"dropdown-item"} href="#">
+                          <NavLink to={"/course"}>All Course</NavLink>
+                        </a>
+                      </li>
                     </ul>
                   </li>
                   {/* Dropdown submenu */}
