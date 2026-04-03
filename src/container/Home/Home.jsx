@@ -2247,7 +2247,6 @@ Trending courses START */}
           <Swiper
             modules={[Navigation, Autoplay]}
             navigation
-            autoplay={{ delay: 2500, disableOnInteraction: false }}
             spaceBetween={20}
             breakpoints={{
               1200: { slidesPerView: 3 }, // xl
