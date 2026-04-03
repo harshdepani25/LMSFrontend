@@ -13,7 +13,7 @@ function Course(props) {
     console.log(search);
 
   return (
-    <>
+    <div className="container">
       <div className="nav my-3 my-xl-0 px-4 flex-nowrap align-items-center">
         <div className="nav-item w-10">
           <form className="position-relative">
@@ -63,7 +63,7 @@ function Course(props) {
           </div>{" "}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
