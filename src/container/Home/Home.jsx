@@ -2234,7 +2234,7 @@ Action box END */}
       {/* =======================
 Trending courses START */}
       <section className="py-5">
-        <div className="container-fluid px-4">
+        <div className="container px-4">
           {/* TITLE */}
           <div className="row mb-4">
             <div className="col-lg-8 mx-auto text-center">
