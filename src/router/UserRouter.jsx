@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { ThemeContext } from "../context/ThemeContext.jsx";
 import Category from "../container/Category/Category.jsx";
 import Course from "../container/Course/Course.jsx";
+import BlogDetail from "../container/BlogDetail/BlogDetail.jsx";
 
 function UserRouter() {
   const themedata = useContext(ThemeContext);
@@ -32,6 +33,7 @@ function UserRouter() {
         <Route path="/instructor-dashboard" element={<InstructorDashboard />} />
         <Route path="/category" element={<Category />} />
         <Route path="/course" element={<Course />} />
+        <Route path="/blog-detail" element={<BlogDetail /> } />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
