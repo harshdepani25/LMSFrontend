@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { useField } from "formik";
 import { IMAGE_URL } from "../../../utility/url";
+import { array } from "yup";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -17,22 +18,35 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-function FileUpload(props) {
+function FileUpload({ type, ...props }) {
   const [field, meta, helper] = useField(props);
 
   const { setValue } = helper;
 
-  let filepath = "";
+  let filepath = " ";
+
+  const files = Array?.from(field?.value);
+  console.log("filed:", files);
 
   //  filepath = '/public/assets/images/courses/4by3/' + field.value;
+  const fileArray = files?.map((v) => {
+    console.log("1234567898765432123456789", v);
 
-  if (typeof field.value?.url === "string") {
-    filepath = IMAGE_URL + field.value;
-  } else if (typeof field.value === "object" && field.value !== null) {
-    filepath = URL.createObjectURL(field.value);
-  }
-  console.log(filepath);
-  console.log(field);
+    if (v?.url) {
+      return v?.url;
+    } else {
+      return URL?.createObjectURL(v)
+    }
+    // if (typeof v === "string") {
+    //   return (filepath = IMAGE_URL + v.name);
+    // } else if (typeof v === "object" && v !== null) {
+    //   console.log("123456789", v);
+
+    //   return (filepath = URL?.createObjectURL(v));
+    // }
+  });
+
+  console.log("files array", fileArray);
 
   return (
     <>
@@ -47,15 +61,15 @@ function FileUpload(props) {
         Upload file
         <VisuallyHiddenInput
           type="file"
-          // onChange={(event) =>
-          //     setValue(event.target.files[0])
-          // }
-          onChange={(event) => setValue(event.target.files[0])}
-          // onBlur={handleBlur}
+          multiple
+          onChange={(event) => setValue(Array.from(event.target.files))}
         />
       </Button>
 
-      <img src={filepath} alt="" width={"50px"} height={"50px"} />
+      {fileArray.map((v) => (
+        <img src={v} alt="" width={"50px"} height={"50px"} />
+      ))}
+
       {
         <p style={{ color: "red" }}>
           {meta.error && meta.touched ? meta.error : null}

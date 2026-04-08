@@ -22,6 +22,7 @@ function UserRouter() {
   useEffect(() => {
     dispatch(CheackAuth());
   }, []);
+  
   return (
     <div className={themedata.theme === 'light' ? 'dark' : 'light'}>
       <Header />

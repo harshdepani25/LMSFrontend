@@ -41,7 +41,6 @@ export const courseApi = createApi({
           );
         } catch {
           patchResult.undo();
-
           /**
            * Alternatively, on failure you can invalidate the corresponding cache tags
            * to trigger a re-fetch:
@@ -60,20 +59,52 @@ export const courseApi = createApi({
       async onQueryStarted(data, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           courseApi.util.updateQueryData("getallcourse", undefined, (draft) => {
-            const index = draft.data.findIndex(
+            console.log("draffffff", draft.data);
+
+
+            const i = draft.data.findIndex(
               (v) => v._id === data.get("_id"),
             );
 
-            if (index !== -1) {
-              draft.data[index] = {
+            const images = data.getAll('course_img')
+            console.log("imagessssss", images);
+
+            let x = [];
+            images.map((v) => {
+              // console.log("typeeeeeeeeee", typeof v, v, JSON.stringify(v), v instanceof File),
+
+              if (typeof v instanceof File) {
+                x.push({ url: URL.createObjectURL(v) })
+              } else {
+                x.push(v.url)
+              }
+
+
+            })
+            console.log("wweeeeeeee", x);
+
+
+            if (i !== -1) {
+              console.log("darafttt", data.get("name"));
+              draft.data[i] = {
                 _id: data.get("_id"),
                 categories_id: data.get("categories_id"),
                 name: data.get("name"),
                 desciption: data.get("desciption"),
-                course_img: 
-                  typeof data.get("course_img") === "string"
-                    ? data.get("course_img")
-                    : URL.createObjectURL(data.get("course_img")),
+                fees: data.get("fees"),
+                duration: data.get("duration"),
+                intrucotor_id: data.get("intrucotor_id"),
+                course_img:
+                  //  images.length > 0
+                  images.map((v) => (
+                    // console.log("typeeeeeeeeee", typeof v, v, JSON.stringify(v), v instanceof File),
+
+                    typeof v instanceof File ?
+                      { url: URL.createObjectURL(v) } :
+                      v.url
+
+                  ))
+                // : draft.data[i].course_img
               };
             }
           }),
@@ -139,7 +170,7 @@ export const courseApi = createApi({
         );
         try {
           await queryFulfilled;
-        } catch { 
+        } catch {
           patchResult.undo();
 
           /**

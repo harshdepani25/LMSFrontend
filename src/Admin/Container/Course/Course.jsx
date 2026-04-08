@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { mixed, object, string } from "yup";
+import { mixed, number, object, string } from "yup";
 import { Form, Formik, useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { getCategory } from "../../../redux/slice/CategorySlice";
@@ -25,10 +25,14 @@ import {
 // import { IMAGE_URL } from "../../../utility/url";
 import SwitchBtn from "../../Component/SwitchBtn/SwitchBtn";
 import Switch from "@mui/material/Switch";
+import { CheackAuth } from "../../../redux/slice/auth.slice";
 
 function Course(props) {
   const cdata = useSelector((state) => state.category);
   console.log(cdata.category);
+
+  const userData = useSelector((state) => state.auth);
+  console.log("user Data", userData?.user?.data);
 
   const { data, error, isLoading } = useGetallcourseQuery();
   console.log(data?.data);
@@ -55,7 +59,10 @@ function Course(props) {
     categories_id: string().required("course id requied Field"),
     name: string().required(),
     desciption: string().required(),
+    fees: number().required(),
+    duration: string().required(),
     course_img: mixed().required(),
+    // course_perview : mixed().required(),
     // .test("pfp", "File Must be have a png, jpg and jpeg", function (value) {
     //   console.log("loh:",value.type);
 
@@ -72,6 +79,7 @@ function Course(props) {
 
   useEffect(() => {
     dispatch(getCategory());
+    dispatch(CheackAuth());
   }, []);
 
   let catData = [
@@ -105,7 +113,7 @@ function Course(props) {
   const handleSetStauts = (data) => {
     console.log("data", data);
     setUpadateData(data);
-    setChecked(event.target.checked)
+    setChecked(event.target.checked);
   };
 
   const [checked, setChecked] = React.useState(true);
@@ -113,22 +121,22 @@ function Course(props) {
   const columns = [
     { field: "name", headerName: "Name", width: 130 },
     { field: "desciption", headerName: "Description", width: 150 },
+    { field: "fees", headerName: "Fees", width: 100 },
+    { field: "duration", headerName: "Duration", width: 100 },
+    { field: "intrucotor_id", headerName: "Instructor Name", width: 150 },
     {
       field: "course_img",
       headerName: "Image",
       width: 130,
       renderCell: (params) => (
-        <img
-          src={params.row.course_img?.url
-            // params.row.course_img.url?.includes("blob")
-            //   ? params.row.course_img.url
-            //   : IMAGE_URL + params.row.course_img
-          }
-          width={"50px"}
-          height={"50px"}
-        />
+        <div>
+          {params?.row?.course_img?.map((v) => (
+            <img src={v?.url} width={"50px"} height={"50px"} />
+          ))}
+        </div>
       ),
     },
+    { field: "perview_url", headerName: "Preview URL", width: 120 },
     {
       field: " ",
       headerName: "status",
@@ -179,18 +187,31 @@ function Course(props) {
                     name: "",
                     desciption: "",
                     categories_id: "",
+                    fees: "",
+                    duration: "",
                     course_img: "",
+                    // preview_url:""
                   }
             }
             validationSchema={courseSchema}
             onSubmit={(values) => {
-              console.log(values);
+              console.log("values", values);
 
               const formData = new FormData();
               formData.append("categories_id", values.categories_id);
+              formData.append("intrucotor_id", userData?.user?.data?._id);
               formData.append("name", values.name);
               formData.append("desciption", values.desciption);
-              formData.append("course_img", values.course_img);
+              formData.append("fees", values.fees);
+              formData.append("duration", values.duration);
+
+              const course_imgs = values.course_img.forEach((v) => {
+                if (v instanceof File) {
+                  formData.append("course_img", v);
+                }
+              });
+
+              console.log(course_imgs);
 
               {
                 updateData
@@ -220,7 +241,14 @@ function Course(props) {
 
               <TextForm id="desciption" name="desciption" label="Description" />
 
+              <TextForm id="fees" name="fees" label="Fees" type="number" />
+
+              <TextForm id="duration" name="duration" label="Duration" />
+
               <FileUpload name="course_img" />
+
+              {/* <FileUpload name="course_perview" /> */}
+
             </Form>
           </Formik>
         </DialogContent>
