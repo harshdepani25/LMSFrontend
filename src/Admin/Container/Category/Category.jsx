@@ -45,26 +45,26 @@ function Category() {
   const CategroySchema = object({
     name: string().required(),
     desciption: string().required(),
-    category_img:  mixed().required()
-      // .test("pfp", "File Must be have a png, jpg and jpeg", function (value) {
-      //   console.log("imgval", value);
-      //   if(typeof value?.url === 'string'){
-      //     return true;
-      //   }
+    category_img: mixed().required(),
+    // .test("pfp", "File Must be have a png, jpg and jpeg", function (value) {
+    //   console.log("imgval", value);
+    //   if(typeof value?.url === 'string'){
+    //     return true;
+    //   }
 
-      //   const supFiles = ["image/jpeg", "image/jpg", "image/png"];
+    //   const supFiles = ["image/jpeg", "image/jpg", "image/png"];
 
-      //   return supFiles.includes(value?.type?.toLowerCase());
-      // })
-      // .test("pfp", "File Must be have less than 2 MB", function (value) {
-      //   console.log(value);
+    //   return supFiles.includes(value?.type?.toLowerCase());
+    // })
+    // .test("pfp", "File Must be have less than 2 MB", function (value) {
+    //   console.log(value);
 
-      //   if(typeof value?.url === 'string'){
-      //     return true;
-      //   }
+    //   if(typeof value?.url === 'string'){
+    //     return true;
+    //   }
 
-      //   return value.size <= 2 * 1024 * 1024;
-      // }),
+    //   return value.size <= 2 * 1024 * 1024;
+    // }),
   });
 
   useEffect(() => {
@@ -103,14 +103,30 @@ function Category() {
   const columns = [
     { field: "name", headerName: "Name", width: 130 },
     { field: "desciption", headerName: "Description", width: 130 },
-    { 
-      field: "category_img", 
-      headerName: "Image", 
+    {
+      field: "parent_id",
+      headerName: "parentCategory",
+      width: 130,
+      renderCell: (params) => {
+        const categoryObj = cdata.category?.find(
+          (v) => v._id === params.row.parent_id,
+        );
+
+        return categoryObj ? categoryObj.name : "null";
+      },
+    },
+    {
+      field: "category_img",
+      headerName: "Image",
       width: 130,
       renderCell: (params) => (
         // <img src={IMAGE_URL + params.row.category_img} width={'50px'} height={'50px'} />
-        <img src={params.row.category_img.url} width={'50px'} height={'50px'} />
-      )
+        <img
+          src={params?.row?.category_img[0]?.url}
+          width={"50px"}
+          height={"50px"}
+        />
+      ),
     },
     {
       field: "action",
@@ -135,6 +151,7 @@ function Category() {
 
   return (
     <React.Fragment>
+    <h2>Categroy</h2>
       <Button variant="outlined" onClick={handleClickOpen}>
         Add Categroy
       </Button>
@@ -148,12 +165,12 @@ function Category() {
                 : {
                     name: "",
                     desciption: "",
-                    category_img: ''
+                    category_img: "",
                   }
             }
             validationSchema={CategroySchema}
             onSubmit={(values) => {
-              console.log(values);
+              console.log("valuessss", values);
               {
                 updateData
                   ? dispatch(updateCategroy(values))

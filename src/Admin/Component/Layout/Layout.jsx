@@ -26,6 +26,7 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { useState } from "react";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import QuizIcon from '@mui/icons-material/Quiz';
 
 const drawerWidth = 240;
 
@@ -112,6 +113,7 @@ const listBox = [
   { label: "Category", icon: <CategoryIcon />, to: "/admin/category" },
   { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
   { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
+  { label: "Quiz", icon: <QuizIcon />, to: "/admin/quiz" },
 ];
 
 export default function Layout({ children }) {

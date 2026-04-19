@@ -3,6 +3,9 @@ import authReducers from './slice/auth.slice'
 import alertReducers from './slice/alert.slice'
 import categoryReducers from './slice/CategorySlice'
 import { courseApi } from './Api/Course.api'
+import { SectionApi } from './Api/Section.api'
+import { quizApi } from './Api/quiz.api'
+import { quizContentApi } from './Api/quizContent.api'
 
 
 export const store = configureStore({
@@ -11,8 +14,11 @@ export const store = configureStore({
     alert: alertReducers,
     category: categoryReducers,
     [courseApi.reducerPath]: courseApi.reducer,
+    [SectionApi.reducerPath]: SectionApi.reducer,
+    [quizApi.reducerPath]: quizApi.reducer,
+    [quizContentApi.reducerPath]: quizContentApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(courseApi.middleware),
+    getDefaultMiddleware().concat(courseApi.middleware, SectionApi.middleware, quizApi.middleware, quizContentApi.middleware),
 })

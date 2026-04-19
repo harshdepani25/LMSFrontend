@@ -22,7 +22,14 @@ export const addCategory = createAsyncThunk(
 
             formData.append("name", data.name)
             formData.append("desciption", data.desciption)
-            formData.append("category_img", data.category_img)
+            formData.append("category_img", data.category_img[0])
+
+            if(data.parent_id){
+                formData.append("parent_id", data.parent_id)
+            }
+
+            console.log("formdata", Object.fromEntries(formData.entries()));
+            
 
             const response = await axiosinstance.post("category/addcategory", formData);
             console.log(response.data.data);
@@ -58,13 +65,16 @@ export const updateCategroy = createAsyncThunk(
     'category/updateCategroy',
     async (data) => {
         try {
-            console.log("updated Data: ", data);
+            console.log("updatedData", data);
 
             const formData = new FormData();
 
             formData.append("name", data.name)
             formData.append("desciption", data.desciption)
-            formData.append("category_img", data.category_img)
+            formData.append("category_img", data.category_img[0])
+
+            console.log("formdata", Object.fromEntries(formData.entries()));
+
 
             const response = await axiosinstance.put(`category/updatecategory/${data._id}`, formData);
             console.log(response);

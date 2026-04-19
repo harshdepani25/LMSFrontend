@@ -144,7 +144,7 @@ function Header(props) {
               {/* Nav item 1 Demos */}
               <li className="nav-item dropdown dropdown-menu-shadow-stacked">
                 <a
-                  className="nav-link bg-primary bg-opacity-10 rounded-3 text-primary px-3 py-3 py-xl-0"
+                  className="nav-link rounded-3 text-primary px-3 py-3 py-xl-0"
                   href="#"
                   id="categoryMenu"
                   data-bs-toggle="dropdown"
@@ -177,7 +177,10 @@ function Header(props) {
                             }
                             href="#"
                           >
-                            {v.name}
+                            <NavLink to={secCat.length > 0 ? `/category/${v._id}` : `/course`}>
+                              {v.name}
+                            </NavLink>
+                            {/* {v.name} */}
                           </a>
 
                           {secCat && (
@@ -207,7 +210,9 @@ function Header(props) {
                                       }
                                       href="#"
                                     >
-                                      {sc.name}
+                                      <NavLink to={thCat.length > 0 ? `/category/${sc._id}` : `/course`}>
+                                        {sc.name}
+                                      </NavLink>
                                     </a>
 
                                     {thCat && (
@@ -227,7 +232,12 @@ function Header(props) {
                                               className="dropdown-item"
                                               href="#"
                                             >
-                                              {tc.name}
+                                              <NavLink
+                                                to={cateData.category.some((c) => c.parent_id === tc._id) ? `/category/${tc._id}` : `/course`}
+                                              >
+                                                {" "}
+                                                {tc.name}
+                                              </NavLink>
                                             </a>
                                           </li>
                                         ))}
@@ -442,8 +452,10 @@ function Header(props) {
                       {data?.data?.map((v) => (
                         <li>
                           {" "}
-                          <a className="dropdown-item" href="course-grid.html">
+                          <a className="dropdown-item">
+                            <NavLink to={`/course-details/${v._id}`}>
                             {v.name}
+                            </NavLink>
                           </a>
                         </li>
                       ))}

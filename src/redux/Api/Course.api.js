@@ -69,19 +69,33 @@ export const courseApi = createApi({
             const images = data.getAll('course_img')
             console.log("imagessssss", images);
 
-            let x = [];
-            images.map((v) => {
-              // console.log("typeeeeeeeeee", typeof v, v, JSON.stringify(v), v instanceof File),
+            // let x = [];
+            // images.map((v) => {
+            //   console.log("typeeeeeeeeee", v,typeof v, v instanceof File)
 
-              if (typeof v instanceof File) {
-                x.push({ url: URL.createObjectURL(v) })
+            //   if (typeof v instanceof File) {
+            //     x.push(v.url)
+            //   } else {
+            //     x.push({url: URL.createObjectURL(v)})
+            //   }
+            // })
+
+            const ImageData = [];
+
+            for (let v of images) {
+              if (v instanceof File) {
+                console.log("zzzzzz", v instanceof File);
+
+                ImageData.push({ url: URL.createObjectURL(v) });
               } else {
-                x.push(v.url)
+                console.log("123456789876543q23456789098765432345tyujh", v);
+
+                ImageData.push({ url: v });
               }
+            }
 
 
-            })
-            console.log("wweeeeeeee", x);
+            console.log("ImageData", ImageData)
 
 
             if (i !== -1) {
@@ -94,21 +108,19 @@ export const courseApi = createApi({
                 fees: data.get("fees"),
                 duration: data.get("duration"),
                 intrucotor_id: data.get("intrucotor_id"),
-                course_img:
-                  //  images.length > 0
-                  images.map((v) => (
-                    // console.log("typeeeeeeeeee", typeof v, v, JSON.stringify(v), v instanceof File),
-
-                    typeof v instanceof File ?
-                      { url: URL.createObjectURL(v) } :
-                      v.url
-
-                  ))
+                course_img: ImageData
+                //  images.length > 0
+                // images.map((v) => (
+                // console.log("typeeeeeeeeee", typeof v, v, JSON.stringify(v), v instanceof File),
+                // typeof v instanceof File ?
+                // { url: URL.createObjectURL(v) } :
+                // v.url
+                // ))
                 // : draft.data[i].course_img
-              };
+              }
             }
-          }),
-        );
+          })
+        )
         try {
           await queryFulfilled;
         } catch {

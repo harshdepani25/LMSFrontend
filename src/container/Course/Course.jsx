@@ -2,17 +2,36 @@ import React from "react";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
 import useSerch from "../../Hook/useSerch";
 import Carousel from 'react-material-ui-carousel';
+import { useNavigate, useParams } from "react-router-dom";
 
 
 function Course(props) {
   const { data, error, isLoading } = useGetallcourseQuery();
   console.log(data?.data);
 
+  const navigate = useNavigate();
+
   const { search, setSeach, filterData } = useSerch(data?.data, [
     "name",
     "desciption",
   ]);
   console.log(search);
+
+  const params = useParams();
+
+  let course;
+  if (params._id) {
+    course = filterData.filter((v) => v.categories_id === params._id)
+  } else {
+    course = filterData
+  }
+
+  console.log("courseeeeee", course);
+  
+
+  const handlecilck = (_id) => {
+    navigate(`/course-details/${_id}`)
+  }
 
   return (
     <main>
@@ -111,8 +130,8 @@ Page content START */}
               {/* Search option END */}
               {/* Course Grid START */}
               <div className="row g-4">
-                {filterData?.map((v) => (
-                  <div className="col-sm-6 col-xl-4">
+                {course?.map((v) => (
+                  <div className="col-sm-6 col-xl-4" onClick={() => handlecilck(v._id)}>
                     <div className="card shadow h-100">
                       {/* Image */}
                       <Carousel>

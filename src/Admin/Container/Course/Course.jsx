@@ -173,6 +173,7 @@ function Course(props) {
 
   return (
     <React.Fragment>
+      <h2>Course</h2>
       <Button variant="outlined" onClick={handleClickOpen}>
         Add Course
       </Button>
@@ -208,6 +209,8 @@ function Course(props) {
               const course_imgs = values.course_img.forEach((v) => {
                 if (v instanceof File) {
                   formData.append("course_img", v);
+                } else {
+                  formData.append("course_img", v.url)
                 }
               });
 

@@ -22286,6 +22286,7 @@ html[dir=rtl] .choices__input {
   }
 }
 
+
 .fullscreen-video .plyr--video {
   height: 100vh;
 }
@@ -22322,7 +22323,19 @@ html[dir=rtl] .choices__input {
   color: #000 !important;
 }
 
+.dark .accordion-item {
+  background-color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.dark .accordion.accordion.accordion-bg-light .accordion-button {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+
 .dark .dropdown-menu,
+.dark .card,
 .dark .bg-body {
   background-color: #14191E !important;
 }
@@ -22337,6 +22350,5 @@ html[dir=rtl] .choices__input {
 {
   color: #fff !important;
 }
-
 
 /*User CSS*/
