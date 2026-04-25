@@ -1,68 +1,92 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  TextField,
-} from "@mui/material";
-import { object, string } from "yup";
-import { Form, Formik } from "formik";
-import { DataGrid } from "@mui/x-data-grid";
+import { useParams } from "react-router-dom";
+import { Formik, Form } from "formik";
+import { Button, Stack, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { DataGrid } from "@mui/x-data-grid";
 import TextForm from "../../Component/TextForm/TextForm";
-import { useGetquizQuery } from "../../../redux/Api/quiz.api";
-import { NavLink, useParams } from "react-router-dom";
+
 import {
   useAddquizContentMutation,
   useDeletequizContentMutation,
   useGetquizContentQuery,
   useUpdatequizContentMutation,
-} from "../../../redux/Api/quizContent.api";
+} from "../../../Redux/Api/QuizContent.Api";
 
-function QuizContent(props) {
-  const [open, setOpen] = useState(false);
-  const [updatedata, setUpdateData] = useState({});
+function QuizContent() {
   const param = useParams();
 
-  console.log("iddddd", param._id);
+  const [updatedata, setUpdateData] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const { data: quiz } = useGetquizQuery();
-  console.log("quiz", quiz);
-
-  const { data: quizContent } = useGetquizContentQuery();
-  console.log("quizcontent", quizContent);
+  const { data } = useGetquizContentQuery();
+  console.log("dataaaaaaaa", data?.data);
 
   const [addData] = useAddquizContentMutation();
   const [updateData] = useUpdatequizContentMutation();
   const [deleteData] = useDeletequizContentMutation();
 
+  const finalData =
+    data?.data?.filter((v) => v.quiz?.toString() === param._id) || [];
+
   const handledelete = async (id) => {
-    console.log(id);
-    deleteData(id);
+    await deleteData(id);
   };
 
-  const handleedit = (val) => {
-    handleClickOpen();
-    setUpdateData(val);
+  const handleEdit = (val) => {
+    setUpdateData({
+      _id: val._id,
+      question: val.question,
+      option1: val.options?.[0] || "",
+      option2: val.options?.[1] || "",
+      option3: val.options?.[2] || "",
+      option4: val.options?.[3] || "",
+      Answer: val.Answer,
+      Mark: val.Mark,
+    });
   };
 
-  const paginationModel = { pae: 0, pageSize: 5 };
+  const handleSubmit = async (values, resetForm) => {
+    if (loading) return;
+    setLoading(true);
+
+    const payload = {
+      quiz: param._id,
+      question: values.question,
+      options: [values.option1, values.option2, values.option3, values.option4],
+      Answer: values.Answer,
+      Mark: values.Mark,
+    };
+
+    try {
+      if (updatedata._id) {
+        await updateData({ _id: updatedata._id, ...payload });
+        setUpdateData({});
+      } else {
+        await addData(payload);
+      }
+
+      resetForm();
+    } catch (err) {
+      console.error(err);
+    }
+
+    setLoading(false);
+  };
+
   const columns = [
-    { field: "qustion", headerName: "Question", width: 130 },
-    { field: "option", headerName: "Option", width: 130 },
-    { field: "answer", headerName: "Answer", width: 130 },
+    { field: "question", headerName: "Question", width: 130 },
+    { field: "options", headerName: "Option", width: 130 },
+    { field: "Answer", headerName: "Answer", width: 130 },
+    { field: "Mark", headerName: "Mark", width: 130 },
     {
       field: "action",
       headerName: "Action",
       width: 170,
       renderCell: (param) => (
         <Stack direction="row" spacing={1}>
-          <IconButton onClick={() => handleedit(param.row)}>
+          <IconButton onClick={() => handleEdit(param.row)}>
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => handledelete(param.row._id)}>
@@ -73,118 +97,73 @@ function QuizContent(props) {
     },
   ];
 
-  const [questions, setQuestions] = useState([
-    { question: "", options: [""], answer: "" },
-  ]);
-
-  const addQue = () => {
-    setQuestions([...questions, { question: "", options: [""], answer: "" }]);
-  };
-
-  const removeQue = (i) => {
-    const update = [...questions];
-    update.splice(i, 1);
-    setQuestions(update);
-  }
-
-  const addOpt = (i) => {
-    const update = [...questions];
-    update[i].options.push("");
-    setQuestions(update);
-  };
-  const removeOpt = (i) => {
-    const update = [...questions];
-    update[i].options.splice(0, 1);
-    setQuestions(update);
-  };
-
-  const handleQuestionChange = (i, value) => {
-    const updated = [...questions];
-    updated[i].question = value;
-    setQuestions(updated);
-  };
-
-  const handleAnswerChange = (i, value) => {
-    const updated = [...questions];
-    updated[i].answer = value;
-    setQuestions(updated);
-  };
-
-  const handleOptionChange = (i, j, value) => {
-    const updated = [...questions];
-    updated[i].options[j] = value;
-    setQuestions(updated);
-  };
-
-  const handleSubmit = (value) => {
-    console.log("valueeeeeeeeeeeeeeee", questions);
-    console.log("valueeee", value);
-    
-  };
-
   return (
-    <>
-      <React.Fragment>
-        <h2>Quiz Content</h2>
-        <form onSubmit={() => handleSubmit}>
-          {questions.map((q, i) => (
-            <div key={i} style={{ marginBottom: "20px" }}>
-              <TextField
-                label="Question"
-                value={q.question}
-                onChange={(e) => handleQuestionChange(i, e.target.value)}
-                fullWidth
-              />
+    <div style={{ padding: "20px" }}>
+      <h2>Quiz Questions</h2>
 
-              {q.options.map((opt, j) => (
-                <TextField
-                  key={j}
-                  label={`Option ${j + 1}`}
-                  value={opt}
-                  onChange={(e) => handleOptionChange(i, j, e.target.value)}
-                  fullWidth
-                  style={{ marginTop: "10px" }}
-                />
-              ))}
-              <Button onClick={() => addOpt(i)}>Add Option</Button>
-              <Button onClick={() => removeOpt(i)}>Remove Option</Button>
+      <Formik
+        enableReinitialize
+        initialValues={
+          updatedata._id
+            ? updatedata
+            : {
+                question: "",
+                option1: "",
+                option2: "",
+                option3: "",
+                option4: "",
+                Answer: "",
+                Mark: "",
+              }
+        }
+        onSubmit={(values, { resetForm }) => handleSubmit(values, resetForm)}
+      >
+        {() => (
+          <Form
+            style={{
+              width: "40%",
+              paddingLeft: "20px",
+              paddingRight: "20px",
+              paddingBottom: "20px",
+              paddingTop: "10px",
+              border: "2px solid #ccc",
+              borderRadius: "10px",
+            }}
+          >
+            <TextForm name="question" label="Question" />
 
-              <TextField
-                label="Answer"
-                value={q.answer}
-                onChange={(e) => handleAnswerChange(i, e.target.value)}
-                fullWidth
-              />
+            <TextForm name="option1" label="Option 1" />
+            <TextForm name="option2" label="Option 2" />
+            <TextForm name="option3" label="Option 3" />
+            <TextForm name="option4" label="Option 4" />
 
-            </div>
-          ))}
+            <TextForm name="Answer" label="Answer" />
 
-          <Button onClick={addQue}>
-            Add Question
-          </Button>
-          <Button onClick={removeQue}>
-            Remove Question
-          </Button>
-          <br />
-          <br />
-          <Button variant="contained" type="submit">
-            Submit All Question
-          </Button>
-        </form>
+            <TextForm name="Mark" label="Mark" />
+            <Stack mt={2}>
+              <Button type="submit" variant="contained" disabled={loading}>
+                {loading ? "Saving..." : updatedata._id ? "Update" : "Save"}
+              </Button>
+            </Stack>
+          </Form>
+        )}
+      </Formik>
 
-        <br />
-        <br />
+      <div style={{ marginTop: "30px" }}>
+        <h3>Questions List</h3>
+
         <DataGrid
-          rows={quizContent?.data}
+          rows={finalData}
           columns={columns}
-          initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}
-          checkboxSelection
-          sx={{ border: 0 }}
-          getRowId={(row) => (row ? row._id : "")}
+          initialState={{
+            pagination: { paginationModel: { page: 0, pageSize: 5 } },
+          }}
+          getRowId={(row) => row._id}
+          autoHeight
         />
-      </React.Fragment>
-    </>
+      </div>
+    </div>
   );
 }
 

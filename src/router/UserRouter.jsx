@@ -14,6 +14,7 @@ import Category from "../container/Category/Category.jsx";
 import Course from "../container/Course/Course.jsx";
 import BlogDetail from "../container/BlogDetail/BlogDetail.jsx";
 import CourseDetails from "../container/Course/CourseDetails.jsx";
+import Quiz from "../container/Quiz/Quiz.jsx";
 
 function UserRouter() {
   const themedata = useContext(ThemeContext);
@@ -39,6 +40,7 @@ function UserRouter() {
         <Route path="/course/:_id" element={<Course />} />
         <Route path="/course-details/:_id" element={<CourseDetails />} />
         <Route path="/blog-detail" element={<BlogDetail /> } />
+        <Route path="/quiz/:_id" element={<Quiz /> } />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

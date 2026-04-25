@@ -12,7 +12,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { useGetAllSectionQuery } from "../../redux/Api/Section.api";
 
 function CourseDetails(props) {
@@ -409,6 +409,25 @@ Page content START */}
                                 </div>
                                 <p className="mb-0">18m 10s</p>
                               </div>
+                              <hr />
+                              {/* Course lecture */}
+                              <div className="d-flex justify-content-between align-items-center">
+                                <NavLink to={`/quiz/${v._id}`}>
+                                <div className="position-relative d-flex align-items-center">
+                                  <a
+                                    href=""
+                                    className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
+                                  >
+                                    <i className="fas fa-play me-0" />
+                                  </a>
+                                  <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
+                                  
+                                   Quiz
+                                  </span>
+                                </div>
+                                </NavLink>
+                              </div>
+                              <hr /> {/* Divider */}
                             </div>
                           </div>
                         </div>

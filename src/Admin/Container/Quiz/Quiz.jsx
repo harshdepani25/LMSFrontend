@@ -23,6 +23,7 @@ import {
   useUpdatequizMutation,
 } from "../../../redux/Api/quiz.api";
 import { NavLink, useParams } from "react-router-dom";
+import { useGetquizContentQuery } from "../../../redux/Api/quizContent.api";
 
 function Quiz(props) {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,10 @@ function Quiz(props) {
   console.log("section", section);
 
   const { data: quiz } = useGetquizQuery();
-  console.log("quiz", quiz);
+  console.log("quiz", quiz?.data);
+
+  const { data: quizContent } = useGetquizContentQuery();
+  console.log("dataaaaaaaa", quizContent?.data);
 
   const [addData] = useAddquizMutation();
   const [updateData] = useUpdatequizMutation();
@@ -95,6 +99,23 @@ function Quiz(props) {
     },
     { field: "name", headerName: "Name", width: 130 },
     {
+      field: "mark",
+      headerName: "Total Mark",
+      width: 130,
+      renderCell: (param) => {
+        const mark = quizContent?.data.filter(
+          (v) => v.quiz === param?.row?._id,
+        );
+        console.log("markkk", mark);
+
+        const toatalmark = mark?.reduce((a, v) => a + v.Mark, 0);
+
+        console.log("toalaaa", toatalmark);
+
+        return toatalmark || null
+      },
+    },
+    {
       field: "action",
       headerName: "Action",
       width: 170,
@@ -112,7 +133,7 @@ function Quiz(props) {
     {
       headerName: "Quiz Content",
       width: 150,
-      renderCell: (parem) => (
+      renderCell: (param) => (
         <div>
           <button style={{ border: "none", background: "none" }}>
             <NavLink
@@ -130,7 +151,7 @@ function Quiz(props) {
                 fontFamily: "sans-serif",
                 borderRadius: "5px",
               }}
-              to={`/admin/quiz-content/${parem.row._id}`}
+              to={`/admin/quiz-content/${param.row._id}`}
             >
               Add Questions
             </NavLink>
@@ -164,6 +185,7 @@ function Quiz(props) {
                       course_id: "",
                       section_id: "",
                       name: "",
+                      mark: null,
                     }
               }
               enableReinitialize

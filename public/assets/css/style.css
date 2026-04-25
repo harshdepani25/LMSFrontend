@@ -22312,6 +22312,75 @@ html[dir=rtl] .choices__input {
   stroke: #747579;
 }
 
+.quiz-container{
+  width: 680px;
+  margin: auto;
+  background: #14191E;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-radius: 20px;
+  padding: 40px 50px;
+}
+
+.quiz-container .hr{
+  height: 2px;
+  border: none;
+  background: #707070;
+}
+
+.quiz-container h3{
+  font-size: 27px;
+  font-weight: 500px;
+}
+
+.quiz-container ul li{
+  display: flex;
+  align-items: center;
+  height: 70px;
+  padding-left: 18px;
+  border: 1px solid #686868;
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}  
+
+.quiz-container button{
+  margin: auto;
+  width: 125px;
+  height: 50px;
+  background: lightcyan;
+  columns: #fff;
+  font-size: 25px;
+  font-weight: 500;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.quiz-container .index{
+  margin: auto;
+  font-size: 18px;
+}
+
+.select{
+  background: #064f8a;
+  border-color: #033361;
+  color: #000;
+}
+
+.quiz-container .corret {
+  background: #dffff2;
+  border-color: #00d397;
+  color: black;
+}
+
+.quiz-container .worng {
+  background: #ffebeb;
+  border-color: #ff4a4a;
+  color: #000;
+}
+
 .dark,
 .dark .bg-light{
   background-color: #000 !important;
