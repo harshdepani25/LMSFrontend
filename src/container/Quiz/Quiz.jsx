@@ -89,6 +89,7 @@ function Quiz() {
     setScore(0);
     setResult(false);
     setAnswer({});
+    setUserAns({})
   };
   console.log(answer, userAns);
 
@@ -142,7 +143,7 @@ function Quiz() {
           <ul>
             {questions?.options?.map((v) => (
               <li
-                className={userAns[questions?._id] === v ? "select" : ""}
+                className={userAns[questions?._id] === v ? "select" : " "}
                 onClick={(e) => {
                   checkAns(e, v);
                 }}

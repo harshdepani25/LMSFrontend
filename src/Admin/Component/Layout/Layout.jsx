@@ -27,6 +27,7 @@ import { useState } from "react";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import QuizIcon from '@mui/icons-material/Quiz';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 
 const drawerWidth = 240;
 
@@ -113,6 +114,7 @@ const listBox = [
   { label: "Category", icon: <CategoryIcon />, to: "/admin/category" },
   { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
   { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
+  { label: "Content", icon: <ContentPasteIcon />, to: "/admin/content" },
   { label: "Quiz", icon: <QuizIcon />, to: "/admin/quiz" },
 ];
 

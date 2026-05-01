@@ -38,7 +38,7 @@ function Header(props) {
   console.log(firstCat);
 
   const auth = useSelector((state) => state.auth);
-  console.log(auth);
+  console.log("checklogin",auth);
 
   const dispatch = useDispatch();
 
@@ -1241,7 +1241,7 @@ function Header(props) {
                   <a
                     href="#"
                     className="dropdown-item bg-danger-soft-hover"
-                    onClick={() => dispatch(LogoutUser(auth.user._id))}
+                    onClick={() => dispatch(LogoutUser(auth.user.data._id))}
                   >
                     Sign Out
                   </a>

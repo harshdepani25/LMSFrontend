@@ -14,6 +14,7 @@ import "swiper/css/scrollbar";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
 import { NavLink, useParams } from "react-router-dom";
 import { useGetAllSectionQuery } from "../../redux/Api/Section.api";
+import { useGetcontentQuery } from "../../redux/Api/Content.api";
 
 function CourseDetails(props) {
   const params = useParams();
@@ -22,7 +23,7 @@ function CourseDetails(props) {
 
   const { data: section } = useGetAllSectionQuery();
 
-  console.log("section data", section?.data);
+  const { data: content } = useGetcontentQuery();
 
   const filerdata = data?.data?.find((v) => v._id === params._id);
 
@@ -333,105 +334,88 @@ Page content START */}
                       id="accordionExample2"
                     >
                       {/* Item */}
-                      {sectiondata?.map((v, i) => ( 
-                        <div className="accordion-item mb-3">
-                          <h6
-                            className="accordion-header font-base"
-                            id={"heading-" + i}
-                          >
-                            <button
-                              className="accordion-button fw-bold rounded d-sm-flex d-inline-block collapsed"
-                              type="button"
-                              data-bs-toggle="collapse"
-                              data-bs-target={"#collapse-" + i}
-                              aria-expanded="true"
-                              aria-controls={"#collapse-" + i}
+                      {sectiondata?.map((v, i) => {
+                        const contentdata = content?.data?.filter(
+                          (c) => c.section_id === v._id,
+                        );
+                        console.log("content final data", contentdata);
+
+                        return (
+                          <div className="accordion-item mb-3">
+                            <h6
+                              className="accordion-header font-base"
+                              id={"heading-" + i}
                             >
-                              {v.name}
-                              <span className="small ms-0 ms-sm-2">
-                                (3 Lectures)
-                              </span>
-                            </button>
-                          </h6>
-                          <div
-                            id={"#collapse-" + i}
-                            className="accordion-collapse collapse show"
-                            aria-labelledby={"heading-" + i}
-                            data-bs-parent="#accordionExample2"
-                          >
-                            <div className="accordion-body mt-3">
-                              {/* Course lecture */}
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="position-relative d-flex align-items-center">
-                                  <a
-                                    href="#"
-                                    className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                  >
-                                    <i className="fas fa-play me-0" />
-                                  </a>
-                                  <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                    Introduction
-                                  </span>
+                              <button
+                                className="accordion-button fw-bold rounded d-sm-flex d-inline-block collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target={"#collapse-" + i}
+                                aria-expanded="true"
+                                aria-controls={"#collapse-" + i}
+                              >
+                                {v.name}
+                                <span className="small ms-0 ms-sm-2">
+                                  (3 Lectures)
+                                </span>
+                              </button>
+                            </h6>
+                            <div
+                              id={"#collapse-" + i}
+                              className="accordion-collapse collapse show"
+                              aria-labelledby={"heading-" + i}
+                              data-bs-parent="#accordionExample2"
+                            >
+                              <div className="accordion-body mt-3">
+                                {/* Course lecture */}
+                                {contentdata.map((cn) => {
+                                  return (
+                                    <>
+                                      <div className="d-flex justify-content-between align-items-center">
+                                        <NavLink
+                                          to={`/course-video-player/${cn._id}`}
+                                        >
+                                          <div className="position-relative d-flex align-items-center">
+                                            <a
+                                              href="#"
+                                              className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
+                                            >
+                                              <i className="fas fa-play me-0" />
+                                            </a>
+                                            <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
+                                              {cn.name}
+                                            </span>
+                                          </div>
+                                        </NavLink>
+                                        <p className="mb-0">2m 10s</p>
+                                      </div>
+                                      <hr />
+                                    </>
+                                  );
+                                })}
+                                {/* Divider */}
+                                {/* Course lecture */}
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <NavLink to={`/quiz/${v._id}`}>
+                                    <div className="position-relative d-flex align-items-center">
+                                      <a
+                                        href=""
+                                        className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
+                                      >
+                                        <i className="fas fa-play me-0" />
+                                      </a>
+                                      <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
+                                        Quiz
+                                      </span>
+                                    </div>
+                                  </NavLink>
                                 </div>
-                                <p className="mb-0">2m 10s</p>
+                                <hr /> {/* Divider */}
                               </div>
-                              <hr /> {/* Divider */}
-                              {/* Course lecture */}
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="position-relative d-flex align-items-center">
-                                  <a
-                                    href="#"
-                                    className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                  >
-                                    <i className="fas fa-play me-0" />
-                                  </a>
-                                  <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                    {" "}
-                                    What is Digital Marketing What is Digital
-                                    Marketing
-                                  </span>
-                                </div>
-                                <p className="mb-0 text-truncate">15m 10s</p>
-                              </div>
-                              <hr /> {/* Divider */}
-                              {/* Course lecture */}
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="position-relative d-flex align-items-center">
-                                  <a
-                                    href="#"
-                                    className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                  >
-                                    <i className="fas fa-play me-0" />
-                                  </a>
-                                  <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                    Type of Digital Marketing
-                                  </span>
-                                </div>
-                                <p className="mb-0">18m 10s</p>
-                              </div>
-                              <hr />
-                              {/* Course lecture */}
-                              <div className="d-flex justify-content-between align-items-center">
-                                <NavLink to={`/quiz/${v._id}`}>
-                                <div className="position-relative d-flex align-items-center">
-                                  <a
-                                    href=""
-                                    className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                  >
-                                    <i className="fas fa-play me-0" />
-                                  </a>
-                                  <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                  
-                                   Quiz
-                                  </span>
-                                </div>
-                                </NavLink>
-                              </div>
-                              <hr /> {/* Divider */}
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                     {/* Course accordion END */}
                   </div>

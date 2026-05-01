@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { useField } from "formik";
 import { IMAGE_URL } from "../../../utility/url";
-import { array } from "yup";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -20,22 +19,36 @@ const VisuallyHiddenInput = styled("input")({
 
 function FileUpload({ type, ...props }) {
   const [field, meta, helper] = useField(props);
+  const [fileType, setFileType] = useState("");
 
   const { setValue } = helper;
 
-  let filepath = " ";
-
-  const files = Array?.from(field?.value);
+  const files = Array.from(field?.value);
   console.log("filed:", files);
+
+  // if (files.type == "video") {
+  //   setFileType("video");
+  // } else if (files.type == "image") {
+  //   setFileType("image");
+  // } else {
+  //   setFileType("raw");
+  // }
+
+  console.log("filesss typesssssss", fileType);
 
   //  filepath = '/public/assets/images/courses/4by3/' + field.value;
   const fileArray = files?.map((v) => {
-    console.log("1234567898765432123456789", v);
-
     if (v?.url) {
-      return v?.url;
+      return {
+        url : v?.url,
+        type : v?.type
+      }
+
     } else {
-      return URL?.createObjectURL(v)
+      return {
+        url: URL?.createObjectURL(v),
+        type : v.type
+      }
     }
     // if (typeof v === "string") {
     //   return (filepath = IMAGE_URL + v.name);
@@ -66,9 +79,17 @@ function FileUpload({ type, ...props }) {
         />
       </Button>
 
-      {fileArray.map((v) => (
-        <img src={v} alt="" width={"50px"} height={"50px"} />
-      ))}
+      {
+        fileArray.map((v)=>{
+          if(v.type == 'video' || v.type == 'video/mp4'){
+              return <video src={v.url} width={"80px"} height={"50px"} />
+          } else if(v.type == 'image' || v.type == 'image/png' || v.type == 'image/jpg'|| v.type == 'image/jpeg'){
+            return <img src={v.url} alt="" width={"80px"} height={"50px"} />
+          }else {
+            return <a href={v.url} target="_blank">Open File</a>
+          }
+        })
+      }
 
       {
         <p style={{ color: "red" }}>

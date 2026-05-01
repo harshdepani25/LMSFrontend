@@ -1,15 +1,18 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import React from "react";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
+import { CheackAuth } from "../redux/slice/auth.slice";
 
-function PrivteRouet(props) {
+function PrivteRouet() {
+  const auth = true
+//   const auth = useSelector((state) => state.auth);
+//   console.log("checklogin", auth?.user);
 
-    let auth=true;
-
-    return (
-        <div>
-            auth ? <Outlet /> : <Navigate to="/singin" />
-        </div>
-    );
+  return (
+    <div>
+      auth ? <Outlet /> : <Navigate to="/auth" />
+    </div>
+  );
 }
 
 export default PrivteRouet;
