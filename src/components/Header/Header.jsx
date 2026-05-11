@@ -38,7 +38,9 @@ function Header(props) {
   console.log(firstCat);
 
   const auth = useSelector((state) => state.auth);
-  console.log("checklogin",auth);
+  console.log("checklogin",auth?.user?.data);
+
+  localStorage.setItem("checkauth", JSON.stringify(auth?.user?.data));
 
   const dispatch = useDispatch();
 

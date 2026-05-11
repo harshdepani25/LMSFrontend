@@ -4,15 +4,27 @@ import { Navigate, Outlet } from "react-router-dom";
 import { CheackAuth } from "../redux/slice/auth.slice";
 
 function PrivteRouet() {
-  const auth = true
-//   const auth = useSelector((state) => state.auth);
-//   console.log("checklogin", auth?.user);
+  const auth = localStorage.getItem("checkauth");
 
-  return (
-    <div>
-      auth ? <Outlet /> : <Navigate to="/auth" />
-    </div>
-  );
+  const userdata = auth != 'undefined' ? JSON.parse(auth) : null;
+
+  console.log("checklogin", auth, userdata);
+
+  if (userdata) {
+    if (userdata.role === "instructor") {
+      return <Outlet />;
+    } else {
+      return <Navigate to="/" />;
+    }
+  } else {
+    return <Navigate to="/auth/instructor" />;
+  }
+
+  // return (
+  //   <div>
+  //     auth ? <Outlet /> : <Navigate to="/auth" />
+  //   </div>
+  // );
 }
 
 export default PrivteRouet;
