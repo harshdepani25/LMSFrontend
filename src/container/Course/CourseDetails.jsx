@@ -15,6 +15,13 @@ import { useGetallcourseQuery } from "../../redux/Api/Course.api";
 import { NavLink, useParams } from "react-router-dom";
 import { useGetAllSectionQuery } from "../../redux/Api/Section.api";
 import { useGetcontentQuery } from "../../redux/Api/Content.api";
+import {
+  useAddcartMutation,
+  useGetcartQuery,
+  useUpdatecartMutation,
+} from "../../redux/Api/Cart.api";
+import { useSelector } from "react-redux";
+import Carousel from "react-material-ui-carousel";
 
 function CourseDetails(props) {
   const params = useParams();
@@ -26,6 +33,7 @@ function CourseDetails(props) {
   const { data: content } = useGetcontentQuery();
 
   const filerdata = data?.data?.find((v) => v._id === params._id);
+  console.log("course data", filerdata);
 
   const sectiondata = section?.data.filter((v) => v.course_id === params._id);
   console.log("sectionnnnnnnnnnnnnn", sectiondata);
@@ -33,6 +41,55 @@ function CourseDetails(props) {
   if (isLoading) {
     return <div className="text-center py-5">Loading...</div>;
   }
+  const { data: Cart } = useGetcartQuery();
+  const [addcart] = useAddcartMutation();
+  const [updatecart] = useUpdatecartMutation();
+
+  const auth = useSelector((state) => state.auth);
+  console.log("checklogin", auth?.user?.data);
+
+  const handlecart = (product) => {
+    console.log("qwer", product);
+
+    const cartUser = Cart?.data?.find(
+      (v) => v?.user_id === auth?.user?.data?._id,
+    );
+
+    console.log(cartUser);
+
+    const productExist = cartUser?.items?.some(
+      (v) => v?.course_id === product?._id,
+    );
+
+    console.log(productExist);
+
+    if (productExist) {
+      console.log("Already In Cart");
+      return;
+    }
+
+    const Item = [...(cartUser?.items || [])];
+
+    console.log(Item);
+
+    Item.push({
+      course_id: product._id,
+      price: product.fees,
+    });
+
+    if (cartUser) {
+      updatecart({
+        _id: cartUser._id,
+        user_id: auth?.user?.data?._id,
+        items: Item,
+      });
+    } else {
+      addcart({
+        user_id: auth?.user?.data?._id,
+        items: Item,
+      });
+    }
+  };
 
   return (
     <main>
@@ -368,7 +425,7 @@ Page content START */}
                             >
                               <div className="accordion-body mt-3">
                                 {/* Course lecture */}
-                                {contentdata.map((cn) => {
+                                {contentdata?.map((cn) => {
                                   return (
                                     <>
                                       <div className="d-flex justify-content-between align-items-center">
@@ -1280,23 +1337,22 @@ Page content START */}
                   {/* Video START */}
                   <div className="card shadow p-2 mb-4 z-index-9">
                     <div className="overflow-hidden rounded-3">
-                      <img
-                        src="assets/images/courses/4by3/01.jpg"
-                        className="card-img"
-                        alt="course image"
-                        style={{
-                          width: "100%",
-                          height: "250px",
-                          objectFit: "cover",
-                        }}
-                      />
+                      <Carousel>
+                        {filerdata?.course_img?.map((v) => (
+                          <img
+                            src={v?.url}
+                            className="card-img"
+                            style={{ height: "300px", objectFit: "cover" }}
+                          />
+                        ))}
+                      </Carousel>
                       {/* Overlay */}
                       <div className="bg-overlay bg-dark opacity-6" />
                       <div className="card-img-overlay d-flex align-items-start flex-column p-3">
                         {/* Video button and link */}
                         <div className="m-auto">
                           <a
-                            href="https://www.youtube.com/embed/tXHviS-4ygo"
+                            // href="https://www.youtube.com/embed/tXHviS-4ygo"
                             className="btn btn-lg text-danger btn-round btn-white-shadow mb-0"
                             data-glightbox
                             data-gallery="course-video"
@@ -1373,8 +1429,12 @@ Page content START */}
                       </div>
                       {/* Buttons */}
                       <div className="mt-3 d-sm-flex justify-content-sm-between">
-                        <a href="#" className="btn btn-outline-primary mb-0">
-                          Free trial
+                        <a
+                          href="#"
+                          className="btn btn-outline-primary mb-0"
+                          onClick={() => handlecart(filerdata)}
+                        >
+                          Add to Cart
                         </a>
                         <a href="#" className="btn btn-success mb-0">
                           Buy course
@@ -1382,6 +1442,7 @@ Page content START */}
                       </div>
                     </div>
                   </div>
+
                   {/* Video END */}
                   {/* Course info START */}
                   <div className="card card-body shadow p-4 mb-4">

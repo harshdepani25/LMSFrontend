@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { LogoutUser } from "../../redux/slice/auth.slice";
 import { useContext } from "react";
 import { ThemeContext, ThemeProvider } from "../../context/ThemeContext";
@@ -9,10 +9,13 @@ import { styled } from "@mui/material/styles";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { getCategory } from "../../redux/slice/CategorySlice.js";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api.js";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 function Header(props) {
   const { data, error, isLoading } = useGetallcourseQuery();
   console.log(data?.data);
+
+  const navigation = useNavigate()
 
   const themedata = useContext(ThemeContext);
 
@@ -1138,21 +1141,8 @@ function Header(props) {
             {/* Nav Main menu END */}
             {/* Nav Search START */}
             <div className="nav my-3 my-xl-0 px-4 flex-nowrap align-items-center">
-              <div className="nav-item w-100">
-                <form className="position-relative">
-                  <input
-                    className="form-control pe-5 bg-transparent"
-                    type="search"
-                    placeholder="Search"
-                    aria-label="Search"
-                  />
-                  <button
-                    className="btn bg-transparent px-2 py-0 position-absolute top-50 end-0 translate-middle-y"
-                    type="submit"
-                  >
-                    <i className="fas fa-search fs-6 " />
-                  </button>
-                </form>
+              <div className="nav-item w-100" onClick={() => navigation("/cart")}>
+                <ShoppingCartIcon />
               </div>
             </div>
             {/* Nav Search END */}
