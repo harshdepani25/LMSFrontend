@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   useGetcartQuery,
   useUpdatecartMutation,
@@ -6,8 +6,19 @@ import {
 import { useSelector } from "react-redux";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
 import Carousel from "react-material-ui-carousel";
+import {
+  useAddCoupanMutation,
+  useGetCoupanQuery,
+  useUpdateCoupanMutation,
+} from "../../redux/Api/coupan.api";
+import Alert from "../../components/Alert/Alert";
+import { setalert } from "../../redux/slice/alert.slice";
 
 function Cart(props) {
+  const [coupans, setCoupan] = useState();
+  const [discount, setDiscount] = useState();
+  const [discountAmount, setDiscountAmount] = useState();
+
   const { data: cart } = useGetcartQuery();
   console.log("cart data", cart?.data);
 
@@ -43,6 +54,32 @@ function Cart(props) {
   );
 
   console.log("total price", totalcost);
+
+  const { data: coupan } = useGetCoupanQuery();
+  console.log("coupan data", coupan?.data);
+
+  const [addCoupan] = useAddCoupanMutation();
+  const [updateCoupan] = useUpdateCoupanMutation();
+
+  const handelcoupan = () => {
+    console.log("coupannnn", coupans);
+
+    const coupandiscount = coupan?.data?.find((v) => v.code === coupans);
+    console.log("couspuasdakfcbykdufc ", coupandiscount);
+
+    setDiscount(coupandiscount);
+
+    const discountamount = coupandiscount?.discount;
+    console.log("amicachdai", discountamount);
+
+    setDiscountAmount(discountamount);
+  };
+
+  const price = (totalcost * discountAmount) / 100;
+
+  console.log("prwfbcbh12222", price);
+
+  const finalamount = totalcost - price;
 
   return (
     <main>
@@ -115,63 +152,67 @@ Page content START */}
                   <table className="table align-middle p-4 mb-0">
                     {/* Table head */}
                     {/* Table body START */}
-                    <tbody className="border-top-0">
-                      {/* Table item */}
-                      {cartdata?.items?.map((v) => {
-                        console.log("vvvvvvvv", v);
 
-                        const couresdata = courses?.data?.filter(
-                          (c) => c._id === v.course_id,
-                        );
-                        console.log("couressssssss", couresdata);
+                    <>
+                      {" "}
+                      <tbody className="border-top-0">
+                        {/* Table item */}
+                        {cartdata?.items?.map((v) => {
+                          console.log("vvvvvvvv", v);
 
-                        return couresdata.map((cart) => {
-                          console.log("carttttttttt", cart);
-
-                          return (
-                            <tr>
-                              {/* Course item */}
-                              <td>
-                                <div className="d-lg-flex align-items-center">
-                                  {/* Image */}
-                                  <div className="w-100px w-md-80px mb-2 mb-md-0">
-                                    {
-                                      <Carousel>
-                                        {cart.course_img.map((i) => (
-                                          <img
-                                            src={i?.url}
-                                            className="rounded"
-                                          />
-                                        ))}
-                                      </Carousel>
-                                    }
-                                  </div>
-                                  {/* Title */}
-                                  <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
-                                    <a href="#">{cart.desciption}</a>
-                                  </h6>
-                                </div>
-                              </td>
-                              {/* Amount item */}
-                              <td>
-                                <h5 className="text-success mb-0">
-                                  {cart.fees}
-                                </h5>
-                              </td>
-                              {/* Action item */}
-                              <td>
-                                <button
-                                  className="btn btn-sm btn-danger-soft px-2 mb-0"
-                                  onClick={() => handledelete(v._id)}
-                                >
-                                  <i className="fas fa-fw fa-times" />
-                                </button>
-                              </td>
-                            </tr>
+                          const couresdata = courses?.data?.filter(
+                            (c) => c._id === v.course_id,
                           );
-                        });
-                      })}
-                    </tbody>
+                          console.log("couressssssss", couresdata);
+
+                          return couresdata?.map((cart) => {
+                            console.log("carttttttttt", cart);
+
+                            return (
+                              <tr>
+                                {/* Course item */}
+                                <td>
+                                  <div className="d-lg-flex align-items-center">
+                                    {/* Image */}
+                                    <div className="w-100px w-md-80px mb-2 mb-md-0">
+                                      {
+                                        <Carousel>
+                                          {cart.course_img.map((i) => (
+                                            <img
+                                              src={i?.url}
+                                              className="rounded"
+                                            />
+                                          ))}
+                                        </Carousel>
+                                      }
+                                    </div>
+                                    {/* Title */}
+                                    <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
+                                      <a href="#">{cart.desciption}</a>
+                                    </h6>
+                                  </div>
+                                </td>
+                                {/* Amount item */}
+                                <td>
+                                  <h5 className="text-success mb-0">
+                                    {cart.fees}
+                                  </h5>
+                                </td>
+                                {/* Action item */}
+                                <td>
+                                  <button
+                                    className="btn btn-sm btn-danger-soft px-2 mb-0"
+                                    onClick={() => handledelete(v._id)}
+                                  >
+                                    <i className="fas fa-fw fa-times" />
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          });
+                        })}
+                      </tbody>
+                    </>
                   </table>
                 </div>
                 {/* Coupon input and button */}
@@ -181,15 +222,20 @@ Page content START */}
                       <input
                         className="form-control form-control "
                         placeholder="COUPON CODE"
+                        onChange={(e) => setCoupan(e.target.value)}
                       />
-                      <button type="button" className="btn btn-primary">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => handelcoupan()}
+                      >
                         Apply coupon
                       </button>
                     </div>
                   </div>
                   {/* Update button */}
                   <div className="col-md-6 text-md-end">
-                    <button className="btn btn-primary mb-0" disabled>
+                    <button className="btn btn-primary mb-0">
                       Update cart
                     </button>
                   </div>
@@ -207,15 +253,17 @@ Page content START */}
                 <ul className="list-group list-group-borderless mb-2">
                   <li className="list-group-item px-0 d-flex justify-content-between">
                     <span className="h6 fw-light mb-0">Original Price</span>
-                    <span className="h6 fw-light mb-0 fw-bold">${totalcost}</span>
+                    <span className="h6 fw-light mb-0 fw-bold">
+                      ${totalcost}
+                    </span>
                   </li>
                   <li className="list-group-item px-0 d-flex justify-content-between">
                     <span className="h6 fw-light mb-0">Coupon Discount</span>
-                    <span className="text-danger">-$0</span>
+                    <span className="text-danger">-${price || 0}</span>
                   </li>
                   <li className="list-group-item px-0 d-flex justify-content-between">
                     <span className="h5 mb-0">Total</span>
-                    <span className="h5 mb-0">${totalcost}</span>
+                    <span className="h5 mb-0">${finalamount || totalcost}</span>
                   </li>
                 </ul>
                 {/* Button */}

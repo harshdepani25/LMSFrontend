@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { axiosinstance } from '../../utility/axiosIntersepotr';
 import { setalert } from './alert.slice';
 
-
 const initialState = {
     isLoading: false,
     user: null,

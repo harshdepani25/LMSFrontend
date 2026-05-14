@@ -17,7 +17,7 @@ function PrivteRouet() {
       return <Navigate to="/" />;
     }
   } else {
-    return <Navigate to="/auth/instructor" />;
+    return <Navigate to="/auth/instructor" />
   }
 
   // return (

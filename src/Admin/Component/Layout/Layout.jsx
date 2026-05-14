@@ -26,101 +26,136 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { useState } from "react";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import QuizIcon from '@mui/icons-material/Quiz';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-
-const drawerWidth = 240;
-
-const openedMixin = (theme) => ({
-  width: drawerWidth,
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: "hidden",
-});
-
-const closedMixin = (theme) => ({
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
-});
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(["width", "margin"], {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-      },
-    },
-  ],
-}));
-
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: "nowrap",
-  boxSizing: "border-box",
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        ...openedMixin(theme),
-        "& .MuiDrawer-paper": openedMixin(theme),
-      },
-    },
-    {
-      props: ({ open }) => !open,
-      style: {
-        ...closedMixin(theme),
-        "& .MuiDrawer-paper": closedMixin(theme),
-      },
-    },
-  ],
-}));
-
-const listBox = [
-  { label: "Dashboard", icon: <DashboardIcon />, to: "/admin/" },
-  { label: "Category", icon: <CategoryIcon />, to: "/admin/category" },
-  { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
-  { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
-  { label: "Content", icon: <ContentPasteIcon />, to: "/admin/content" },
-  { label: "Quiz", icon: <QuizIcon />, to: "/admin/quiz" },
-];
+import QuizIcon from "@mui/icons-material/Quiz";
+import ContentPasteIcon from "@mui/icons-material/ContentPaste";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import { useSelector } from "react-redux";
 
 export default function Layout({ children }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+
+  const drawerWidth = 240;
+
+  const openedMixin = (theme) => ({
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    overflowX: "hidden",
+  });
+
+  const closedMixin = (theme) => ({
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: "hidden",
+    width: `calc(${theme.spacing(7)} + 1px)`,
+    [theme.breakpoints.up("sm")]: {
+      width: `calc(${theme.spacing(8)} + 1px)`,
+    },
+  });
+
+  const DrawerHeader = styled("div")(({ theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+  }));
+
+  const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== "open",
+  })(({ theme }) => ({
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    variants: [
+      {
+        props: ({ open }) => open,
+        style: {
+          marginLeft: drawerWidth,
+          width: `calc(100% - ${drawerWidth}px)`,
+          transition: theme.transitions.create(["width", "margin"], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        },
+      },
+    ],
+  }));
+
+  const Drawer = styled(MuiDrawer, {
+    shouldForwardProp: (prop) => prop !== "open",
+  })(({ theme }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    boxSizing: "border-box",
+    variants: [
+      {
+        props: ({ open }) => open,
+        style: {
+          ...openedMixin(theme),
+          "& .MuiDrawer-paper": openedMixin(theme),
+        },
+      },
+      {
+        props: ({ open }) => !open,
+        style: {
+          ...closedMixin(theme),
+          "& .MuiDrawer-paper": closedMixin(theme),
+        },
+      },
+    ],
+  }));
+
+  // const listBox = [
+  //   { label: "Dashboard", icon: <DashboardIcon />, to: "/admin/" },
+  //   { label: "Category", icon: <CategoryIcon />, to: "/admin/category" },
+  //   { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
+  //   { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
+  //   { label: "Content", icon: <ContentPasteIcon />, to: "/admin/content" },
+  //   { label: "Quiz", icon: <QuizIcon />, to: "/admin/quiz" },
+  //   { label: "Coupon", icon: <ConfirmationNumberIcon />, to: "/admin/coupan" },
+  // ];
+
+  const auth = useSelector((state) => state.auth);
+  console.log("checklogin", auth?.user?.data);
+
+  let listBox;
+  if (auth?.user?.role === "instructor") {
+    listBox = [
+      { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
+      { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
+      { label: "Content", icon: <ContentPasteIcon />, to: "/admin/content" },
+      { label: "Quiz", icon: <QuizIcon />, to: "/admin/quiz" },
+      {
+        label: "Coupon",
+        icon: <ConfirmationNumberIcon />,
+        to: "/admin/coupan",
+      },
+    ];
+  } else {
+    listBox = [
+      { label: "Dashboard", icon: <DashboardIcon />, to: "/admin/" },
+      { label: "Category", icon: <CategoryIcon />, to: "/admin/category" },
+      { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
+      { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
+      { label: "Content", icon: <ContentPasteIcon />, to: "/admin/content" },
+      { label: "Quiz", icon: <QuizIcon />, to: "/admin/quiz" },
+      {
+        label: "Coupon",
+        icon: <ConfirmationNumberIcon />,
+        to: "/admin/coupan",
+      },
+    ];
+  }
 
   const handleDrawerOpen = () => {
     setOpen(true);
