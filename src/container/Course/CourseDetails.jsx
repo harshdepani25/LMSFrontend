@@ -49,48 +49,45 @@ function CourseDetails(props) {
   console.log("checklogin", auth?.user?.data);
 
   const handlecart = (product) => {
-    console.log("qwer", product);
+    const userId = auth?.user?.data?._id;
 
-    const cartUser = Cart?.data?.find(
-      (v) => v?.user_id === auth?.user?.data?._id,
+    if (!userId || !product?._id) return;
+
+    const pendingCart = Cart?.data?.find(
+      (cart) =>
+        cart?.user_id === userId &&
+        cart?.status === "pending",
     );
 
-    console.log(cartUser);
+    const newItem = {
+      course_id: product._id,
+      price: product?.fees,
+    };
 
-    const productExist = cartUser?.items?.some(
-      (v) => v?.course_id === product?._id,
+    const productExist = pendingCart?.items?.some(
+      (item) => item?.course_id === product._id,
     );
-
-    console.log(productExist);
 
     if (productExist) {
       console.log("Already In Cart");
       return;
     }
 
-    const Item = [...(cartUser?.items || [])];
-
-    console.log(Item);
-
-    Item.push({
-      course_id: product._id,
-      price: product.fees,
-    });
-
-    if (cartUser) {
+    if (pendingCart) {
       updatecart({
-        _id: cartUser._id,
-        user_id: auth?.user?.data?._id,
-        items: Item,
+        _id: pendingCart._id,
+        user_id: userId,
+        status: "pending",
+        items: [...(pendingCart.items || []), newItem],
       });
     } else {
       addcart({
-        user_id: auth?.user?.data?._id,
-        items: Item,
+        user_id: userId,
+        status: "pending",
+        items: [newItem],
       });
     }
   };
-
   return (
     <main>
       {/* =======================

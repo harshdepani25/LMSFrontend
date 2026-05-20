@@ -12,28 +12,25 @@ import {
   useUpdateCoupanMutation,
 } from "../../redux/Api/coupan.api";
 import Alert from "../../components/Alert/Alert";
-import { setalert } from "../../redux/slice/alert.slice";
+import { useCreateOrderMutation, useGetpaymentQuery, useVerifyPaymentMutation } from "../../redux/Api/payment.api";
 
-function Cart(props) {
+function Cart() {
   const [coupans, setCoupan] = useState();
   const [discount, setDiscount] = useState();
   const [discountAmount, setDiscountAmount] = useState();
 
   const { data: cart } = useGetcartQuery();
-  console.log("cart data", cart?.data);
+  const [updatecart] = useUpdatecartMutation();
 
   const { data: courses } = useGetallcourseQuery();
-  console.log("coourse data", courses?.data);
-
-  const [updatecart] = useUpdatecartMutation();
 
   const auth = useSelector((state) => state.auth);
   console.log("checklogin", auth?.user?.data);
 
   const cartdata = cart?.data?.find(
-    (v) => v?.user_id === auth?.user?.data?._id,
+    (v) => v?.user_id === auth?.user?.data?._id && v?.status === "pending",
   );
-  console.log("cart final data", cartdata);
+  console.log("cartfinaldata", cartdata);
 
   const handledelete = (_id) => {
     console.log("iddddd", _id);
@@ -52,13 +49,11 @@ function Cart(props) {
     (acc, v) => acc + Number(v.price),
     0,
   );
-
   console.log("total price", totalcost);
 
   const { data: coupan } = useGetCoupanQuery();
   console.log("coupan data", coupan?.data);
 
-  const [addCoupan] = useAddCoupanMutation();
   const [updateCoupan] = useUpdateCoupanMutation();
 
   const handelcoupan = () => {
@@ -74,12 +69,68 @@ function Cart(props) {
 
     setDiscountAmount(discountamount);
   };
-
   const price = (totalcost * discountAmount) / 100;
-
   console.log("prwfbcbh12222", price);
-
   const finalamount = totalcost - price;
+
+
+  const { data : payment } = useGetpaymentQuery();
+  const paymentdata = payment?.data?.find((v)=> v?.cart_id === cartdata?._id);
+  console.log("payment final", paymentdata);
+
+  const [createOrder] = useCreateOrderMutation();
+  const [verifyPayment] = useVerifyPaymentMutation();
+
+  const handlecheckout = async () => {
+    if (discount?.limit > discount?.use) {
+      updateCoupan({
+        _id: discount._id,
+        use: discount.use + 1,
+      });
+    } else {
+      console.log("Invalid Coupan Code");
+    }
+
+    const response = await createOrder({
+      amount: finalamount || totalcost,
+      cart_id: cartdata._id,
+      user_id: auth?.user?.data?._id,
+    });
+
+    const order = await response?.data?.Order;
+
+    console.log("po111111111111111", order, response);
+    
+    // Open Razorpay Checkout
+    const options = {
+      key: response?.data?.key, // Replace with your Razorpay key_id
+      amount: order?.amount, // Amount is in currency subunits.
+      currency: order?.currency,
+      name: "ELEVATE KNOWLEDGE",
+      description: "Test Transaction",
+      order_id: order?.id, // This is the order_id created in the backend
+      prefill: {
+        name: "Harsh Depani",
+        email: "harshdepani2509@gmail.com",
+        contact: "9601894287",
+      },
+      handler: async function (responce) {
+        console.log("responce", responce);
+        await verifyPayment(responce);
+      }, 
+      theme: {
+        color: "#F37254",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    console.log("ertyuiytrewertyu", window.Razorpay, options);
+    
+    rzp.open();
+
+    await updatecart({...cartdata, status:"compelet"})
+
+  };
 
   return (
     <main>
@@ -268,7 +319,11 @@ Page content START */}
                 </ul>
                 {/* Button */}
                 <div className="d-grid">
-                  <a href="checkout.html" className="btn btn-lg btn-success">
+                  <a
+                    // href="checkout.html"
+                    className="btn btn-lg btn-success"
+                    onClick={() => handlecheckout()}
+                  >
                     Proceed to Checkout
                   </a>
                 </div>

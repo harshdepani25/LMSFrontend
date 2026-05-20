@@ -9,6 +9,7 @@ import { quizContentApi } from './Api/quizContent.api'
 import { contentApi } from './Api/Content.api'
 import { cartApi } from './Api/Cart.api'
 import { coupanApi } from './Api/coupan.api'
+import { paymentapi } from './Api/payment.api'
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     [contentApi.reducerPath]: contentApi.reducer,
     [cartApi.reducerPath] : cartApi.reducer,
     [coupanApi.reducerPath] : coupanApi.reducer,
+    [paymentapi.reducerPath] : paymentapi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -33,5 +35,6 @@ export const store = configureStore({
       contentApi.middleware,
       cartApi.middleware,
       coupanApi.middleware,
+      paymentapi.middleware,
     ),
 })
