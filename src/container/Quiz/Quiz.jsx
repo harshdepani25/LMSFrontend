@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useGetquizContentQuery } from "../../Redux/Api/QuizContent.Api";
 import { useGetquizQuery } from "../../Redux/Api/Quiz.Api";
 import { useParams } from "react-router-dom";
-import styled from "@emotion/styled";
 
 function Quiz() {
   const param = useParams();
