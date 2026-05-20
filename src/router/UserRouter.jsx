@@ -17,6 +17,10 @@ import CourseDetails from "../container/Course/CourseDetails.jsx";
 import Quiz from "../container/Quiz/Quiz.jsx";
 import CourseVideoPlayer from "../container/Course/CourseVideoPlayer.jsx";
 import Cart from "../container/Cart/Cart.jsx";
+import About from "../container/About/About.jsx";
+import Contact from "../container/Contact/Contact.jsx";
+import Pricing from "../container/Pricing/Pricing.jsx";
+import Blog from "../container/Blog/Blog.jsx";
 
 function UserRouter() {
   const themedata = useContext(ThemeContext);
@@ -42,16 +46,20 @@ function UserRouter() {
         <Route path="/course-details/:_id" element={<CourseDetails />} />
 
         <Route path="/blog-detail" element={<BlogDetail />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/blog" element={<Blog />} />
         <Route path="/quiz/:_id" element={<Quiz />} />
 
         <Route path="/cart" element={<Cart />} />
 
         <Route path="*" element={<NotFound />} />
 
-          <Route
-            path="/course-video-player/:_id"
-            element={<CourseVideoPlayer />}
-          />
+        <Route
+          path="/course-video-player/:_id"
+          element={<CourseVideoPlayer />}
+        />
         <Route element={<PrivteRouet />}>
           <Route
             path="/instructor-dashboard"
