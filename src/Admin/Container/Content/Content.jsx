@@ -24,6 +24,7 @@ import {
   useGetcontentQuery,
   useUpdatecontentMutation,
 } from "../../../redux/Api/Content.api";
+import RadioButton from "../../Component/RadioButton/RadioButton";
 
 function Content(props) {
   const [open, setOpen] = useState(false);
@@ -94,6 +95,7 @@ function Content(props) {
     },
     { field: "name", headerName: "Name", width: 130 },
     { field: "order", headerName: "Order", width: 130 },
+    { field: "type", headerName: "Type", width: 130 },
     {
       field: "content_file",
       headerName: "File",
@@ -103,13 +105,19 @@ function Content(props) {
           <>
             {params?.row?.content_file?.map((v) => {
               if (v.type === "video") {
-                return <video src={v.url} controls width={"118px"} height={"60px"} />;
+                return (
+                  <video src={v.url} controls width={"118px"} height={"60px"} />
+                );
               } else if (v.type === "image") {
                 return (
                   <img src={v.url} alt="" width={"80px"} height={"50px"} />
                 );
               } else {
-                return <a href={v.url} target="_blank">Open File</a>
+                return (
+                  <a href={v.url} target="_blank">
+                    Open File
+                  </a>
+                );
               }
             })}
           </>
@@ -139,6 +147,11 @@ function Content(props) {
     // name: string().required()
   });
 
+  const dataType = [
+    { value: "free", label: "Free" },
+    { value: "paid", label: "Paid" },
+  ];
+
   return (
     <>
       <h1>Content</h1>
@@ -159,6 +172,7 @@ function Content(props) {
                       name: "",
                       order: "",
                       content_file: "",
+                      type: "",
                       mark: null,
                     }
               }
@@ -172,6 +186,7 @@ function Content(props) {
                 formData.append("section_id", values.section_id);
                 formData.append("name", values.name);
                 formData.append("order", values.order);
+                formData.append("type", values.type);
 
                 const content_file = values.content_file.forEach((v) => {
                   if (v instanceof File) {
@@ -213,7 +228,6 @@ function Content(props) {
                     formik.setFieldValue("course_id", e.target.value);
                   }}
                 />
-
                 <TextForm
                   select
                   slotProps={{
@@ -225,10 +239,10 @@ function Content(props) {
                   data={secdrop}
                   label="section"
                 />
-
                 <TextForm name="name" id="name" label="Enter Name" />
                 <TextForm name="order" id="order" label="Enter Order" />
-
+                <label htmlFor="">Enter Contetn Type</label>
+                <RadioButton name="type" id="type" data={dataType} /> <br />
                 <FileUpload name="content_file" />
               </Form>
             </Formik>

@@ -48,11 +48,11 @@ function UserRouter() {
 
         <Route path="*" element={<NotFound />} />
 
-        <Route element={<PrivteRouet />}>
           <Route
             path="/course-video-player/:_id"
             element={<CourseVideoPlayer />}
           />
+        <Route element={<PrivteRouet />}>
           <Route
             path="/instructor-dashboard"
             element={<InstructorDashboard />}

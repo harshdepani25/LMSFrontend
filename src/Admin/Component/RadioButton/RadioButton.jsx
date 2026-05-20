@@ -21,7 +21,7 @@ function RadioButton({ data, label, ...props }) {
                     {...field}
                      aria-labelledby="demo-radio-buttons-group-label"
                 >{
-                        data.map((v) => (
+                        data?.map((v) => (
                             <FormControlLabel value={v.value} control={<Radio />} label={v.label} />
                         ))
                     }

@@ -12,7 +12,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useGetAllSectionQuery } from "../../redux/Api/Section.api";
 import { useGetcontentQuery } from "../../redux/Api/Content.api";
 import {
@@ -22,9 +22,13 @@ import {
 } from "../../redux/Api/Cart.api";
 import { useSelector } from "react-redux";
 import Carousel from "react-material-ui-carousel";
+import { useGetpaymentQuery } from "../../redux/Api/payment.api";
 
 function CourseDetails(props) {
   const params = useParams();
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
+  console.log("checklogin", auth?.user?.data);
 
   const { data, isLoading } = useGetallcourseQuery();
 
@@ -41,12 +45,12 @@ function CourseDetails(props) {
   if (isLoading) {
     return <div className="text-center py-5">Loading...</div>;
   }
+
   const { data: Cart } = useGetcartQuery();
+  console.log("cart", Cart?.data);
+
   const [addcart] = useAddcartMutation();
   const [updatecart] = useUpdatecartMutation();
-
-  const auth = useSelector((state) => state.auth);
-  console.log("checklogin", auth?.user?.data);
 
   const handlecart = (product) => {
     const userId = auth?.user?.data?._id;
@@ -54,9 +58,7 @@ function CourseDetails(props) {
     if (!userId || !product?._id) return;
 
     const pendingCart = Cart?.data?.find(
-      (cart) =>
-        cart?.user_id === userId &&
-        cart?.status === "pending",
+      (cart) => cart?.user_id === userId && cart?.status === "pending",
     );
 
     const newItem = {
@@ -88,6 +90,25 @@ function CourseDetails(props) {
       });
     }
   };
+
+  const { data: payment } = useGetpaymentQuery();
+
+  console.log("payment", payment?.data);
+
+  const PaymentUser = payment?.data?.filter(
+    (v) => v?.user_id === auth?.user?.data?._id,
+  );
+
+  console.log("PaymentUser", PaymentUser);
+
+  const purCart = Cart?.data?.find((v) =>
+    PaymentUser?.map((v1) => v1?.cart_id === v?._id),
+  );
+  console.log("purched cart", purCart);
+
+  const Pay_Course = purCart?.items?.some((v) => v?.course_id === params._id && PaymentUser[0]?.status === 'completed');
+  console.log(Pay_Course);
+
   return (
     <main>
       {/* =======================
@@ -441,6 +462,31 @@ Page content START */}
                                             </span>
                                           </div>
                                         </NavLink>
+                                        {
+                                          cn.type === "free" || Pay_Course ? (
+                                            <NavLink
+                                              style={{
+                                                backgroundColor: "blue",
+                                                color: "white",
+                                                borderRadius: "5px",
+                                                padding: "5px",
+                                              }}
+                                              to={`/course-video-player/${cn._id}`}
+                                            >
+                                              Preview
+                                            </NavLink>
+                                          ) : (
+                                            <button
+                                              style={{
+                                                backgroundColor: "red",
+                                                borderRadius: "5px",
+                                              }}
+                                            >
+                                              Locked
+                                            </button>
+                                          )
+                                          // )
+                                        }
                                         <p className="mb-0">2m 10s</p>
                                       </div>
                                       <hr />
