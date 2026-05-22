@@ -319,7 +319,7 @@ function Header(props) {
               </li>
             </ul>
 
-            <MaterialUISwitch onClick={handleChange} sx={{ m: 1 }} defaultChecked />
+            <MaterialUISwitch sx={{ m: 1 }} defaultChecked onChange={(e) => handleChange(e)} />
       
 
             {/* Nav Search START */}
