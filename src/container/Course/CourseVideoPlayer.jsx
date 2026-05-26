@@ -3,10 +3,19 @@ import { useParams } from "react-router-dom";
 import { useGetcontentQuery } from "../../redux/Api/Content.api";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
 import { useGetAllSectionQuery } from "../../redux/Api/Section.api";
+import {
+  useAddprogessMutation,
+  useGetAllprogessQuery,
+  useUpdateprogessMutation,
+} from "../../redux/Api/progess.api";
+import { useAddenrollmentMutation, useGetenrollmentQuery } from "../../redux/Api/enrollment.api";
+import { useSelector } from "react-redux";
 
 function CourseVideoPlayer(props) {
   const param = useParams();
-  console.log("iddddddd", param._id);
+
+  const auth = useSelector((state) => state.auth);
+  console.log("checklogin", auth?.user?.data);
 
   const { data: course } = useGetallcourseQuery();
   const { data: section } = useGetAllSectionQuery();
@@ -25,6 +34,100 @@ function CourseVideoPlayer(props) {
   );
   console.log("section data", sectiondata);
 
+  const onTimeUpdate = (e, id) => {
+    const currentTimeee = Math.floor(e.target.currentTime);
+    localStorage.setItem(id, currentTimeee);
+  };
+
+  const { data: enrollment } = useGetenrollmentQuery();
+
+    console.log(enrollment);
+
+    const [addEnrollment] = useAddenrollmentMutation();
+
+    const Enroll_USER = enrollment?.data?.find((v) => v?.user_id === auth?.user?.data?._id)
+
+    console.log(Enroll_USER);
+
+    const En_ID = Enroll_USER?._id
+
+    console.log(En_ID);
+
+
+  const { data: progress } = useGetAllprogessQuery();
+  const [addProgress] = useAddprogessMutation();
+  const [updateProgress] = useUpdateprogessMutation();
+
+  const handlecompelet= async () => {
+    const findProgress = progress?.data?.find(
+      (v) => v.content_id === param._id && v.enrollment_id === En_ID,
+    );
+
+    console.log(findProgress);
+
+    if (findProgress) {
+      await updateProgress({
+        _id: findProgress._id,
+        is_completed: true,
+      });
+    } else {
+      await addProgress({
+        enrollment_id: Enroll_USER._id,
+        content_id: param._id,
+        is_completed: true,
+      });
+    }
+  }
+
+  const handleVideoEnd = async (e, id) => {
+    const duration = e.target.duration;
+    const findProgress = progress?.data?.find(
+      (v) => v.content_id === id && v.enrollment_id === En_ID,
+    );
+
+    console.log(findProgress);
+
+    if (findProgress) {
+      await updateProgress({
+        _id: findProgress._id,
+        duration: duration,
+        is_completed: true,
+      });
+    } else {
+      await addProgress({
+        enrollment_id: Enroll_USER._id,
+        content_id: id,
+        duration: duration,
+        is_completed: true,
+      });
+    }
+  };
+
+  const handlePause = async (e, id) => {
+    const currentTime = e.target.currentTime;
+    const duration = e.target.duration;
+
+    const findProgress = progress?.data?.find(
+      (v) => v.content_id === id && v.enrollment_id === En_ID,
+    );
+
+    console.log(findProgress);
+
+    if (findProgress) {
+      await updateProgress({
+        _id: findProgress._id,
+        duration: currentTime,
+        is_completed: false,
+      });
+    } else {
+      await addProgress({
+        enrollment_id: Enroll_USER._id,
+        content_id: id,
+        duration: duration,
+      });
+    }
+  };
+
   return (
     <div>
       {/* **************** MAIN CONTENT START **************** */}
@@ -41,10 +144,36 @@ function CourseVideoPlayer(props) {
                       crossOrigin="anonymous"
                       playsInline
                       src={constentdata?.content_file[0]?.url}
+                      onLoadedMetadata={(e) => {
+                        const saveTime = localStorage.getItem(
+                          constentdata?.content_file[0]._id,
+                        );
+
+                        if (saveTime) {
+                          e.target.currentTime = parseFloat(saveTime);
+                        }
+                      }}
+                      onTimeUpdate={(e) =>
+                        onTimeUpdate(e, constentdata?.content_file[0]._id)
+                      }
+                      onEnded={(e) =>
+                        handleVideoEnd(e, constentdata?.content_file[0]._id)
+                      }
+                      onPause={(e) =>
+                        handlePause(e, constentdata?.content_file[0]._id)
+                      }
                     ></video>
                   ) : (
                     <>
-                      <a href={constentdata?.content_file[0]?.url}>Open File</a>
+                      <span>
+                        
+                          <a className="btn btn-outline-primary mb-0" href={constentdata?.content_file[0]?.url}>Open File</a>
+                        </span> <br /> <br />
+
+                        <a href="#" className="btn btn-success mb-0" onClick={() => handlecompelet() }>
+                            Marsk as Complet
+                          </a>
+                    
                     </>
                   )}
                 </div>

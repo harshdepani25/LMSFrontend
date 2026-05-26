@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Navigation,
   Pagination,
@@ -23,6 +23,19 @@ import {
 import { useSelector } from "react-redux";
 import Carousel from "react-material-ui-carousel";
 import { useGetpaymentQuery } from "../../redux/Api/payment.api";
+import {
+  useAddprogessMutation,
+  useGetAllprogessQuery,
+  useUpdateprogessMutation,
+} from "../../redux/Api/progess.api";
+import {
+  useAddenrollmentMutation,
+  useGetenrollmentQuery,
+} from "../../redux/Api/enrollment.api";
+import { duration } from "@mui/material/styles";
+import CheckIcon from "@mui/icons-material/Check";
+import Checkbox from "@mui/material/Checkbox";
+import { useAddgenerateCertificateMutation } from "../../redux/Api/certificate.api";
 
 function CourseDetails(props) {
   const params = useParams();
@@ -106,8 +119,103 @@ function CourseDetails(props) {
   );
   console.log("purched cart", purCart);
 
-  const Pay_Course = purCart?.items?.some((v) => v?.course_id === params._id && PaymentUser[0]?.status === 'completed');
+  const Pay_Course = purCart?.items?.some(
+    (v) =>
+      v?.course_id === params._id && PaymentUser[0]?.status === "completed",
+  );
   console.log(Pay_Course);
+
+  const { data: progress } = useGetAllprogessQuery();
+
+  console.log(progress);
+
+  const findProgress = progress?.data?.find((v) => v.content_id === params._id);
+
+  console.log(findProgress);
+
+  const [addProgress] = useAddprogessMutation();
+  const [updateProgress] = useUpdateprogessMutation();
+
+  const { data: enrollment } = useGetenrollmentQuery();
+
+  console.log(enrollment);
+
+  const [addEnrollment] = useAddenrollmentMutation();
+
+  const Enroll_USER = enrollment?.data?.find(
+    (v) => v?.user_id === auth?.user?.data?._id,
+  );
+  console.log(Enroll_USER);
+  const Enroll_id = Enroll_USER?._id;
+
+
+  const sortedSections = sectiondata ? [...sectiondata].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+  const orderedLectures = [];
+
+  sortedSections.forEach((sec) => {
+    const secLectures = content?.data?.filter((c) => c.section_id === sec._id) || [];
+    const sortedSecLectures = [...secLectures].sort((a, b) => (a.order || 0) - (b.order || 0));
+    orderedLectures.push(...sortedSecLectures);
+  });
+
+  const totalLecturesCount = orderedLectures.length;
+
+  const lecturesWithCompletion = orderedLectures.map((cn) => {
+    const file = cn.content_file?.[0];
+    const isCompleted = progress?.data?.find(
+      (p) =>
+        (p.content_id === cn._id || (file?._id && p.content_id === file._id)) &&
+        p.enrollment_id === Enroll_id
+    );
+    const complete = isCompleted?.is_completed || false;
+    return {
+      ...cn,
+      complete,
+    };
+  });
+
+  const completedLecturesCount = lecturesWithCompletion.filter(l => l.complete).length;
+  const courseProgressPercentage = totalLecturesCount > 0 
+    ? Math.round((completedLecturesCount / totalLecturesCount) * 100) 
+    : 0;
+
+  const firstIncompleteLecture = lecturesWithCompletion.find(l => !l.complete);
+  const firstIncompleteLectureId = firstIncompleteLecture?._id;
+  const firstLectureId = lecturesWithCompletion[0]?._id;
+  const [videoDur, setvideoTotalDuration] = useState({});
+
+  const onTimeUpdate = async (e, id) => {
+    const duration = e.target.duration;
+    const currentTime = localStorage.getItem(id);
+    console.log("duration:", duration);
+    console.log("currentTime:", currentTime);
+
+    const percentage = (currentTime / duration) * 100;
+
+    console.log(percentage);
+
+    setvideoTotalDuration((prev) => ({
+      ...prev,
+      [id]: duration,
+    }));
+  };
+
+  console.log(videoDur);
+
+  const [addcertificate] = useAddgenerateCertificateMutation()
+
+  const genratecertificate = async () => {
+    const certificate = await addcertificate({
+      course: filerdata?._id, 
+      user : auth?.user?.data?._id, 
+      grade : "A+", 
+      issue_date: Date.now()
+    }).unwrap();
+
+    console.log("cccccccccccccccccccccccc", certificate);
+    window.location.href = certificate.data
+    
+  }
 
   return (
     <main>
@@ -415,6 +523,29 @@ Page content START */}
                         );
                         console.log("content final data", contentdata);
 
+                        let Match_Con = content?.data?.filter((v1) =>v1.Section_id === v._id,);
+                        console.log(Match_Con);
+
+                        const sort = Match_Con?.sort((a, b) => a.order - b.order,);
+                        console.log(sort);
+
+                        const totalContents = sort?.length;
+                        console.log(totalContents);
+
+                        const sectionProgress = progress?.data?.filter((p) => p.enrollment_id === Enroll_id &&
+                            sort?.some((c) => c._id === p.content_id),);
+                        console.log(sectionProgress);
+
+                        const completedContents = sectionProgress?.length || 0;
+                        const percentage =  
+                          totalContents > 0
+                            ? (
+                                (completedContents / totalContents) *
+                                100
+                              ).toFixed(2)
+                            : 0;
+                        console.log(percentage);
+                        
                         return (
                           <div className="accordion-item mb-3">
                             <h6
@@ -444,8 +575,41 @@ Page content START */}
                               <div className="accordion-body mt-3">
                                 {/* Course lecture */}
                                 {contentdata?.map((cn) => {
+                                  console.log("cbbbbnnnnnnnnnnnnnnnnn", cn._id);
+
+                                  const file = cn.content_file?.[0];
+                                  console.log(file);
+                                  console.log("type:", file?.type);
+
+                                  const isCompleted = progress?.data?.find(
+                                    (p) =>
+                                      (p.content_id === cn._id ||
+                                        p.content_id === file._id) &&
+                                      p.enrollment_id === Enroll_id,
+                                  );
+                                  console.log(
+                                    "123456789",
+                                    isCompleted,
+                                    cn._id,
+                                    Enroll_id,
+                                  );
+                                  const complete = isCompleted?.is_completed;
+                                  console.log("comp", complete);
+
                                   return (
                                     <>
+                                      {file?.type === "video" ? (
+                                        <video
+                                          // ref={vRef}
+                                          style={{ display: "none" }}
+                                          onLoadedMetadata={(e) =>
+                                            onTimeUpdate(e, cn._id)
+                                          }
+                                          src={file.url}
+                                        ></video>
+                                      ) : (
+                                        ""
+                                      )}
                                       <div className="d-flex justify-content-between align-items-center">
                                         <NavLink
                                           to={`/course-video-player/${cn._id}`}
@@ -460,21 +624,26 @@ Page content START */}
                                             <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
                                               {cn.name}
                                             </span>
+                                            {complete ? (
+                                              <CheckIcon className="text-success" />
+                                            ) : null}
                                           </div>
                                         </NavLink>
                                         {
                                           cn.type === "free" || Pay_Course ? (
-                                            <NavLink
-                                              style={{
-                                                backgroundColor: "blue",
-                                                color: "white",
-                                                borderRadius: "5px",
-                                                padding: "5px",
-                                              }}
-                                              to={`/course-video-player/${cn._id}`}
-                                            >
-                                              Preview
-                                            </NavLink>
+                                            <div className="d-flex align-items-center">
+                                              <NavLink
+                                                style={{
+                                                  backgroundColor: "blue",
+                                                  color: "white",
+                                                  borderRadius: "5px",
+                                                  padding: "5px",
+                                                }}
+                                                to={`/course-video-player/${cn._id}`}
+                                              >
+                                                Preview
+                                              </NavLink>
+                                            </div>
                                           ) : (
                                             <button
                                               style={{
@@ -487,7 +656,16 @@ Page content START */}
                                           )
                                           // )
                                         }
-                                        <p className="mb-0">2m 10s</p>
+                                        <p className="mb-0">
+                                          {videoDur[cn._id]
+                                            ? `${Math.floor(videoDur[cn._id] / 60)}
+                                                  :${Math.floor(
+                                                    videoDur[cn._id] % 60,
+                                                  )
+                                                    .toString()
+                                                    .padStart(2, "0")}`
+                                            : ""}
+                                        </p>
                                       </div>
                                       <hr />
                                     </>
@@ -1378,113 +1556,150 @@ Page content START */}
               <div className="row mb-5 mb-lg-0">
                 <div className="col-md-6 col-lg-12">
                   {/* Video START */}
-                  <div className="card shadow p-2 mb-4 z-index-9">
-                    <div className="overflow-hidden rounded-3">
-                      <Carousel>
-                        {filerdata?.course_img?.map((v) => (
-                          <img
-                            src={v?.url}
-                            className="card-img"
-                            style={{ height: "300px", objectFit: "cover" }}
-                          />
-                        ))}
-                      </Carousel>
-                      {/* Overlay */}
-                      <div className="bg-overlay bg-dark opacity-6" />
-                      <div className="card-img-overlay d-flex align-items-start flex-column p-3">
-                        {/* Video button and link */}
-                        <div className="m-auto">
-                          <a
-                            // href="https://www.youtube.com/embed/tXHviS-4ygo"
-                            className="btn btn-lg text-danger btn-round btn-white-shadow mb-0"
-                            data-glightbox
-                            data-gallery="course-video"
-                          >
-                            <i className="fas fa-play" />
+                  {Pay_Course && (
+                    <div className="card card-body shadow p-4 mb-4 z-index-9">
+                      {/* Title */}
+                      <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h4 className="mb-0">Your Progress</h4>
+                       </div>
+                      
+                      {/* Progress bar */}
+                      <div className="progress progress-sm bg-primary bg-opacity-15 mb-3" style={{ height: "10px" }}>
+                        <div
+                          className="progress-bar bg-primary animate-all"
+                          role="progressbar"
+                          style={{ width: `${courseProgressPercentage}%`, transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)" }}
+                          aria-valuenow={courseProgressPercentage}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                        />
+                      </div>
+                      
+                      {/* Stats */}
+                      <div className="d-flex justify-content-between align-items-center mb-4">
+                        <span className="h6 fw-light mb-0 text-muted">
+                          <i className="fas fa-book-open text-primary me-2" />
+                          {completedLecturesCount} of {totalLecturesCount} Lectures Completed
+                        </span>
+                        <span className="h6 mb-0 text-primary fw-bold">{courseProgressPercentage}%</span>
+                      </div>
+                      
+                      {courseProgressPercentage === 100 && 
+                      <a href="#" className="btn btn-success mb-0" onClick={() => genratecertificate()}>
+                            Certificate
                           </a>
+                      }
+                    </div>
+                  )}
+                  {Pay_Course ? null : (
+                    <div className="card shadow p-2 mb-4 z-index-9">
+                      <div className="overflow-hidden rounded-3">
+                        <Carousel>
+                          {filerdata?.course_img?.map((v) => (
+                            <img
+                              src={v?.url}
+                              className="card-img"
+                              style={{ height: "300px", objectFit: "cover" }}
+                            />
+                          ))}
+                        </Carousel>
+                        {/* Overlay */}
+                        <div className="bg-overlay bg-dark opacity-6" />
+                        <div className="card-img-overlay d-flex align-items-start flex-column p-3">
+                          {/* Video button and link */}
+                          <div className="m-auto">
+                            <a
+                              // href="https://www.youtube.com/embed/tXHviS-4ygo"
+                              className="btn btn-lg text-danger btn-round btn-white-shadow mb-0"
+                              data-glightbox
+                              data-gallery="course-video"
+                            >
+                              <i className="fas fa-play" />
+                            </a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    {/* Card body */}
-                    <div className="card-body px-3">
-                      {/* Info */}
-                      <div className="d-flex justify-content-between align-items-center">
-                        {/* Price and time */}
-                        <div>
-                          <div className="d-flex align-items-center">
-                            <h3 className="fw-bold mb-0 me-2">$150</h3>
-                            <span className="text-decoration-line-through mb-0 me-2">
-                              $350
-                            </span>
-                            <span className="badge bg-orange text-white mb-0">
-                              60% off
-                            </span>
+                      {/* Card body */}
+                      <div className="card-body px-3">
+                        {/* Info */}
+                        <div className="d-flex justify-content-between align-items-center">
+                          {/* Price and time */}
+                          <div>
+                            <div className="d-flex align-items-center">
+                              <h3 className="fw-bold mb-0 me-2">$150</h3>
+                              <span className="text-decoration-line-through mb-0 me-2">
+                                $350
+                              </span>
+                              <span className="badge bg-orange text-white mb-0">
+                                60% off
+                              </span>
+                            </div>
+                            <p className="mb-0 text-danger">
+                              <i className="fas fa-stopwatch me-2" />5 days left
+                              at this price
+                            </p>
                           </div>
-                          <p className="mb-0 text-danger">
-                            <i className="fas fa-stopwatch me-2" />5 days left
-                            at this price
-                          </p>
+                          {/* Share button with dropdown */}
+                          <div className="dropdown">
+                            {/* Share button */}
+                            <a
+                              href="#"
+                              className="btn btn-sm btn-light rounded small"
+                              role="button"
+                              id="dropdownShare"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            >
+                              <i className="fas fa-fw fa-share-alt" />
+                            </a>
+                            {/* dropdown button */}
+                            <ul
+                              className="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+                              aria-labelledby="dropdownShare"
+                            >
+                              <li>
+                                <a className="dropdown-item" href="#">
+                                  <i className="fab fa-twitter-square me-2" />
+                                  Twitter
+                                </a>
+                              </li>
+                              <li>
+                                <a className="dropdown-item" href="#">
+                                  <i className="fab fa-facebook-square me-2" />
+                                  Facebook
+                                </a>
+                              </li>
+                              <li>
+                                <a className="dropdown-item" href="#">
+                                  <i className="fab fa-linkedin me-2" />
+                                  LinkedIn
+                                </a>
+                              </li>
+                              <li>
+                                <a className="dropdown-item" href="#">
+                                  <i className="fas fa-copy me-2" />
+                                  Copy link
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-                        {/* Share button with dropdown */}
-                        <div className="dropdown">
-                          {/* Share button */}
+                        {/* Buttons */}
+                        <div className="mt-3 d-sm-flex justify-content-sm-between">
                           <a
                             href="#"
-                            className="btn btn-sm btn-light rounded small"
-                            role="button"
-                            id="dropdownShare"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
+                            className="btn btn-outline-primary mb-0"
+                            onClick={() => handlecart(filerdata)}
                           >
-                            <i className="fas fa-fw fa-share-alt" />
+                            Add to Cart
                           </a>
-                          {/* dropdown button */}
-                          <ul
-                            className="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
-                            aria-labelledby="dropdownShare"
-                          >
-                            <li>
-                              <a className="dropdown-item" href="#">
-                                <i className="fab fa-twitter-square me-2" />
-                                Twitter
-                              </a>
-                            </li>
-                            <li>
-                              <a className="dropdown-item" href="#">
-                                <i className="fab fa-facebook-square me-2" />
-                                Facebook
-                              </a>
-                            </li>
-                            <li>
-                              <a className="dropdown-item" href="#">
-                                <i className="fab fa-linkedin me-2" />
-                                LinkedIn
-                              </a>
-                            </li>
-                            <li>
-                              <a className="dropdown-item" href="#">
-                                <i className="fas fa-copy me-2" />
-                                Copy link
-                              </a>
-                            </li>
-                          </ul>
+                          <a href="#" className="btn btn-success mb-0">
+                            Buy course
+                          </a>
                         </div>
                       </div>
-                      {/* Buttons */}
-                      <div className="mt-3 d-sm-flex justify-content-sm-between">
-                        <a
-                          href="#"
-                          className="btn btn-outline-primary mb-0"
-                          onClick={() => handlecart(filerdata)}
-                        >
-                          Add to Cart
-                        </a>
-                        <a href="#" className="btn btn-success mb-0">
-                          Buy course
-                        </a>
-                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Video END */}
                   {/* Course info START */}
