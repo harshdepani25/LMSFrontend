@@ -13,6 +13,7 @@ import { paymentapi } from './Api/payment.api'
 import { enrollmentapi } from './Api/enrollment.api'
 import { progessApi } from './Api/progess.api'
 import { certificateApi } from './Api/certificate.api'
+import { reviewApi } from './Api/review.api'
 
 export const store = configureStore({
   reducer: {
@@ -30,7 +31,7 @@ export const store = configureStore({
     [enrollmentapi.reducerPath] : enrollmentapi.reducer,
     [progessApi.reducerPath] : progessApi.reducer,
     [certificateApi.reducerPath] : certificateApi.reducer,
-
+    [reviewApi.reducerPath] : reviewApi.reducer
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -45,7 +46,7 @@ export const store = configureStore({
       paymentapi.middleware,
       enrollmentapi.middleware,
       progessApi.middleware,
-      certificateApi.middleware
-      
+      certificateApi.middleware,
+      reviewApi.middleware,
     ),
 })

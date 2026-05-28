@@ -36,8 +36,16 @@ import { duration } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import Checkbox from "@mui/material/Checkbox";
 import { useAddgenerateCertificateMutation } from "../../redux/Api/certificate.api";
+import {
+  useAddreviewMutation,
+  useGetAllreviewQuery,
+  useUpdatereviewMutation,
+} from "../../redux/Api/review.api";
+import { useFormik } from "formik";
 
 function CourseDetails(props) {
+  const [rating, setRating] = useState()
+
   const params = useParams();
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
@@ -148,13 +156,17 @@ function CourseDetails(props) {
   console.log(Enroll_USER);
   const Enroll_id = Enroll_USER?._id;
 
-
-  const sortedSections = sectiondata ? [...sectiondata].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+  const sortedSections = sectiondata
+    ? [...sectiondata].sort((a, b) => (a.order || 0) - (b.order || 0))
+    : [];
   const orderedLectures = [];
 
   sortedSections.forEach((sec) => {
-    const secLectures = content?.data?.filter((c) => c.section_id === sec._id) || [];
-    const sortedSecLectures = [...secLectures].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const secLectures =
+      content?.data?.filter((c) => c.section_id === sec._id) || [];
+    const sortedSecLectures = [...secLectures].sort(
+      (a, b) => (a.order || 0) - (b.order || 0),
+    );
     orderedLectures.push(...sortedSecLectures);
   });
 
@@ -165,7 +177,7 @@ function CourseDetails(props) {
     const isCompleted = progress?.data?.find(
       (p) =>
         (p.content_id === cn._id || (file?._id && p.content_id === file._id)) &&
-        p.enrollment_id === Enroll_id
+        p.enrollment_id === Enroll_id,
     );
     const complete = isCompleted?.is_completed || false;
     return {
@@ -174,12 +186,17 @@ function CourseDetails(props) {
     };
   });
 
-  const completedLecturesCount = lecturesWithCompletion.filter(l => l.complete).length;
-  const courseProgressPercentage = totalLecturesCount > 0 
-    ? Math.round((completedLecturesCount / totalLecturesCount) * 100) 
-    : 0;
+  const completedLecturesCount = lecturesWithCompletion.filter(
+    (l) => l.complete,
+  ).length;
+  const courseProgressPercentage =
+    totalLecturesCount > 0
+      ? Math.round((completedLecturesCount / totalLecturesCount) * 100)
+      : 0;
 
-  const firstIncompleteLecture = lecturesWithCompletion.find(l => !l.complete);
+  const firstIncompleteLecture = lecturesWithCompletion.find(
+    (l) => !l.complete,
+  );
   const firstIncompleteLectureId = firstIncompleteLecture?._id;
   const firstLectureId = lecturesWithCompletion[0]?._id;
   const [videoDur, setvideoTotalDuration] = useState({});
@@ -202,20 +219,66 @@ function CourseDetails(props) {
 
   console.log(videoDur);
 
-  const [addcertificate] = useAddgenerateCertificateMutation()
+  const [addcertificate] = useAddgenerateCertificateMutation();
 
   const genratecertificate = async () => {
     const certificate = await addcertificate({
-      course: filerdata?._id, 
-      user : auth?.user?.data?._id, 
-      grade : "A+", 
-      issue_date: Date.now()
+      course: filerdata?._id,
+      user: auth?.user?.data?._id,
+      grade: "A+",
+      issue_date: Date.now(),
     }).unwrap();
 
-    console.log("cccccccccccccccccccccccc", certificate);
-    window.location.href = certificate.data
-    
-  }
+    window.location.href = certificate.data;
+  };
+
+  const { data: review } = useGetAllreviewQuery();
+  const [addreview] = useAddreviewMutation();
+  const [updatereview] = useUpdatereviewMutation();
+
+  const isUserreview = review?.data?.some(
+    (v) => v?.user?._id === auth?.user?.data?._id,
+  );
+  console.log(isUserreview);
+
+  const coursereview = review?.data?.filter((v) => v.course === params._id);
+  // console.log(coursereview);
+
+  let avarageRating =
+    coursereview?.reduce((acc, v, i) => acc + v.rating, 0) /
+    coursereview?.length;
+  // console.log(avarageRating);
+
+  const formik = useFormik({
+    initialValues: {
+      description: "",
+    },
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      console.log(values);
+
+      let course_id = data?.data?.find((v) => v?._id === params._id);
+
+      await addreview({
+        user: auth?.user?.data?._id,
+        description: values.description,
+        course: course_id._id,
+        rating: rating,
+      });
+    },
+  });
+
+  const handleEditReview = (val) => {
+    console.log(val);
+  };
+
+  let filterReview = review?.data?.filter((v) => v.course === params._id);
+  console.log(filterReview);
+
+  let totalStars = 5;
+
+  const { handleSubmit, handleChange, handleBlur, values, errors, touched } =
+    formik;
 
   return (
     <main>
@@ -523,21 +586,28 @@ Page content START */}
                         );
                         console.log("content final data", contentdata);
 
-                        let Match_Con = content?.data?.filter((v1) =>v1.Section_id === v._id,);
+                        let Match_Con = content?.data?.filter(
+                          (v1) => v1.Section_id === v._id,
+                        );
                         console.log(Match_Con);
 
-                        const sort = Match_Con?.sort((a, b) => a.order - b.order,);
+                        const sort = Match_Con?.sort(
+                          (a, b) => a.order - b.order,
+                        );
                         console.log(sort);
 
                         const totalContents = sort?.length;
                         console.log(totalContents);
 
-                        const sectionProgress = progress?.data?.filter((p) => p.enrollment_id === Enroll_id &&
-                            sort?.some((c) => c._id === p.content_id),);
+                        const sectionProgress = progress?.data?.filter(
+                          (p) =>
+                            p.enrollment_id === Enroll_id &&
+                            sort?.some((c) => c._id === p.content_id),
+                        );
                         console.log(sectionProgress);
 
                         const completedContents = sectionProgress?.length || 0;
-                        const percentage =  
+                        const percentage =
                           totalContents > 0
                             ? (
                                 (completedContents / totalContents) *
@@ -545,7 +615,7 @@ Page content START */}
                               ).toFixed(2)
                             : 0;
                         console.log(percentage);
-                        
+
                         return (
                           <div className="accordion-item mb-3">
                             <h6
@@ -847,29 +917,26 @@ Page content START */}
                     <div className="row mb-4">
                       <h5 className="mb-4">Our Student Reviews</h5>
                       {/* Rating info */}
-                      <div className="col-md-4 mb-3 mb-md-0">
+                     <div className="col-md-4 mb-3 mb-md-0">
                         <div className="text-center">
                           {/* Info */}
-                          <h2 className="mb-0">4.5</h2>
+                          <h2 className="mb-0">{avarageRating?avarageRating:0}</h2>
                           {/* Star */}
-                          <ul className="list-inline mb-0">
-                            <li className="list-inline-item me-0">
-                              <i className="fas fa-star text-warning" />
-                            </li>
-                            <li className="list-inline-item me-0">
-                              <i className="fas fa-star text-warning" />
-                            </li>
-                            <li className="list-inline-item me-0">
-                              <i className="fas fa-star text-warning" />
-                            </li>
-                            <li className="list-inline-item me-0">
-                              <i className="fas fa-star text-warning" />
-                            </li>
-                            <li className="list-inline-item me-0">
-                              <i className="fas fa-star-half-alt text-warning" />
-                            </li>
-                          </ul>
-                          <p className="mb-0">(Based on todays review)</p>
+                           <div className="d-sm-flex mt-1 mt-md-0 align-items-center mx-6">
+                          {[...Array(totalStars)].map((_, index) => {
+                                  return (
+                                      <ul className="list-inline mb-0">
+                                    <i
+                                      key={index}
+                                      className={
+                                        index < avarageRating
+                                          ? "fas fa-star text-warning"
+                                          : "far fa-star text-warning" }/>
+                                    </ul>
+                                  );
+                                })}
+                                </div>
+                          <p className="mb-0">(Based on Course review)</p>
                         </div>
                       </div>
                       {/* Progress-bar and star */}
@@ -1050,224 +1117,168 @@ Page content START */}
                     </div>
                     {/* Review END */}
                     {/* Student review START */}
-                    <div className="row">
-                      {/* Review item START */}
-                      <div className="d-md-flex my-4">
-                        {/* Avatar */}
-                        <div className="avatar avatar-xl me-4 flex-shrink-0">
-                          <img
-                            className="avatar-img rounded-circle"
-                            src="assets/images/avatar/09.jpg"
-                            alt="avatar"
-                          />
-                        </div>
-                        {/* Text */}
-                        <div>
-                          <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
-                            <h5 className="me-3 mb-0">Jacqueline Miller</h5>
-                            {/* Review star */}
-                            <ul className="list-inline mb-0">
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="far fa-star text-warning" />
-                              </li>
-                            </ul>
-                          </div>
-                          {/* Info */}
-                          <p className="small mb-2">2 days ago</p>
-                          <p className="mb-2">
-                            Perceived end knowledge certainly day sweetness why
-                            cordially. Ask a quick six seven offer see among.
-                            Handsome met debating sir dwelling age material. As
-                            style lived he worse dried. Offered related so
-                            visitors we private removed. Moderate do subjects to
-                            distance.{" "}
-                          </p>
-                          {/* Like and dislike button */}
-                          <div
-                            className="btn-group"
-                            role="group"
-                            aria-label="Basic radio toggle button group"
-                          >
-                            {/* Like button */}
-                            <input
-                              type="radio"
-                              className="btn-check"
-                              name="btnradio"
-                              id="btnradio1"
-                            />
-                            <label
-                              className="btn btn-outline-light btn-sm mb-0"
-                              htmlFor="btnradio1"
-                            >
-                              <i className="far fa-thumbs-up me-1" />
-                              25
-                            </label>
-                            {/* Dislike button */}
-                            <input
-                              type="radio"
-                              className="btn-check"
-                              name="btnradio"
-                              id="btnradio2"
-                            />
-                            <label
-                              className="btn btn-outline-light btn-sm mb-0"
-                              htmlFor="btnradio2"
-                            >
-                              {" "}
-                              <i className="far fa-thumbs-down me-1" />2
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Comment children level 1 */}
-                      <div className="d-md-flex mb-4 ps-4 ps-md-5">
-                        {/* Avatar */}
-                        <div className="avatar avatar-lg me-4 flex-shrink-0">
-                          <img
-                            className="avatar-img rounded-circle"
-                            src="assets/images/avatar/02.jpg"
-                            alt="avatar"
-                          />
-                        </div>
-                        {/* Text */}
-                        <div>
-                          <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
-                            <h5 className="me-3 mb-0">Louis Ferguson</h5>
-                          </div>
-                          {/* Info */}
-                          <p className="small mb-2">1 days ago</p>
-                          <p className="mb-2">
-                            Water timed folly right aware if oh truth.
-                            Imprudence attachment him for sympathize. Large
-                            above be to means. Dashwood does provide stronger
-                            is. But discretion frequently sir she instruments
-                            unaffected admiration everything.
-                          </p>
-                        </div>
-                      </div>
-                      {/* Divider */}
-                      <hr />
-                      {/* Review item END */}
-                      {/* Review item START */}
-                      <div className="d-md-flex my-4">
-                        {/* Avatar */}
-                        <div className="avatar avatar-xl me-4 flex-shrink-0">
-                          <img
-                            className="avatar-img rounded-circle"
-                            src="assets/images/avatar/07.jpg"
-                            alt="avatar"
-                          />
-                        </div>
-                        {/* Text */}
-                        <div>
-                          <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
-                            <h5 className="me-3 mb-0">Dennis Barrett</h5>
-                            {/* Review star */}
-                            <ul className="list-inline mb-0">
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="fas fa-star text-warning" />
-                              </li>
-                              <li className="list-inline-item me-0">
-                                <i className="far fa-star text-warning" />
-                              </li>
-                            </ul>
-                          </div>
-                          {/* Info */}
-                          <p className="small mb-2">2 days ago</p>
-                          <p className="mb-2">
-                            Handsome met debating sir dwelling age material. As
-                            style lived he worse dried. Offered related so
-                            visitors we private removed. Moderate do subjects to
-                            distance.{" "}
-                          </p>
-                          {/* Like and dislike button */}
-                          <div
-                            className="btn-group"
-                            role="group"
-                            aria-label="Basic radio toggle button group"
-                          >
-                            {/* Like button */}
-                            <input
-                              type="radio"
-                              className="btn-check"
-                              name="btnradio"
-                              id="btnradio3"
-                            />
-                            <label
-                              className="btn btn-outline-light btn-sm mb-0"
-                              htmlFor="btnradio3"
-                            >
-                              <i className="far fa-thumbs-up me-1" />
-                              25
-                            </label>
-                            {/* Dislike button */}
-                            <input
-                              type="radio"
-                              className="btn-check"
-                              name="btnradio"
-                              id="btnradio4"
-                            />
-                            <label
-                              className="btn btn-outline-light btn-sm mb-0"
-                              htmlFor="btnradio4"
-                            >
-                              {" "}
-                              <i className="far fa-thumbs-down me-1" />2
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Review item END */}
-                      {/* Divider */}
-                      <hr />
-                    </div>
+                   
                     {/* Student review END */}
                     {/* Leave Review START */}
-                    <div className="mt-2">
-                      <h5 className="mb-4">Leave a Review</h5>
-                      <form className="row g-3">
-                        {/* Name */}
-                        <div className="col-md-6 bg-light-input">
+                    {filterReview?.map((v) => {
+                        const isMyReview = auth?.user?.data?._id === v?.user?._id;
+                        return (
+                          <div className="d-md-flex my-4">
+                            {/* Avatar */}
+                            <div className="avatar avatar-xl me-4 flex-shrink-0">
+                              <img className="avatar-img rounded-circle" src="../assets/images/avatar/09.jpg" alt="avatar" />
+                            </div>
+                            {/* Text */}
+                            <div>
+                              <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
+                                <h5 className="me-3 mb-0">{v?.user?.name}</h5>
+                                {/* Review star */}
+
+                                {[...Array(totalStars)].map((_, index) => {
+                                  return (
+                                      <ul className="list-inline mb-0">
+                                    <i
+                                      key={index}
+                                      className={
+                                        index < v.rating
+                                          ? "fas fa-star text-warning"
+                                          : "far fa-star text-warning" }/>
+                                    </ul>
+                                  );
+                                })}
+                                {/* <ul className="list-inline mb-0">
+                                  <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                  <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                  <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                  <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                  <li className="list-inline-item me-0"><i className="far fa-star text-warning" /></li>
+                                </ul> */}
+                              </div>
+                              {/* Info */}
+                              <p className="small mb-2">2 days ago</p>
+                              <p className="mb-2">{v.description}.</p>
+                              {/* Like and dislike button */}
+                              {/* {isMyReview && (
+                                <div className="d-flex gap-2">
+                                  <button
+                                    className="btn btn-sm btn-primary"
+                                    onClick={() => handleEditReview(v)}
+                                  >
+                                    Edit Review
+                                  </button>
+
+
+                                </div>
+                              )} */}
+
+                            </div>
+                          </div>
+                        )
+                      })
+                      }
+                    {isUserreview ? (
+                      ""
+                    ) : (
+                      <div className="mt-2">
+                        <h5 className="mb-4">Leave a Review For This Course</h5>
+                        <div>
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                              key={star}
+                              onClick={() => setRating(star)}
+                              style={{ cursor: "pointer", margin: "4px 42px" }}
+                            >
+                              <i
+                                className={
+                                  rating >= star
+                                    ? "fas fa-star text-warning"
+                                    : "far fa-star text-warning"
+                                }
+                                style={{
+                                  fontSize: "40px",
+                                  marginTop: "10px",
+                                  marginBottom: "20px",
+                                }}
+                              />
+                            </span>
+                          ))}
+                        </div>
+                        {/* review */}
+                        {rating ? (
+                          <form className="row g-3" onSubmit={handleSubmit}>
+                            {/* Name */}
+                            {/* <div className="col-md-6 bg-light-input">
                           <input
                             type="text"
+                            name='name'
                             className="form-control"
-                            id="inputtext"
-                            placeholder="Name"
+                            id="inputtext" placeholder="Name"
                             aria-label="First name"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.name}
                           />
-                        </div>
-                        {/* Email */}
-                        <div className="col-md-6 bg-light-input">
+                        </div> */}
+                            {/* Email */}
+                            {/* <div className="col-md-6 bg-light-input">
                           <input
                             type="email"
+                            name='email'
                             className="form-control"
                             placeholder="Email"
                             id="inputEmail4"
+                             onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.email}
                           />
-                        </div>
+                        </div> */}
+                            {/* Rating */}
+                            {/* <div className="col-12 bg-light-input">
+                          <select id="inputState2" className="form-select js-choice" >
+                            <option selected >★★★★★ (5/5)</option>
+                            <option value={4}>★★★★☆ (4/5)</option>
+                            <option value={3}>★★★☆☆ (3/5)</option>
+                            <option value={2}>★★☆☆☆ (2/5)</option>
+                            <option value={1}>★☆☆☆☆ (1/5)</option>
+                          </select>
+                        </div> */}
+                            {/* Message */}
+
+                            <div className="col-12 bg-light-input">
+                              <textarea
+                                name="description"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                value={values.description}
+                                className="form-control"
+                                id="exampleFormControlTextarea1"
+                                placeholder="Your review"
+                                rows={3}
+                                defaultValue={""}
+                              />
+                            </div>
+                            {/* Button */}
+                            <div className="col-12">
+                              <button
+                                type="submit"
+                                className="btn btn-primary mb-0"
+                              >
+                                Post Review
+                              </button>
+                            </div>
+                          </form>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    )}
+
+                     
+                    {/* <div className="mt-2">
+                      <h5 className="mb-4">Leave a Review</h5>
+                      <form className="row g-3">
                         {/* Rating */}
-                        <div className="col-12 bg-light-input">
+                    {/* <div className="col-12 bg-light-input">
                           <select
                             id="inputState2"
                             className="form-select js-choice"
@@ -1278,8 +1289,8 @@ Page content START */}
                             <option>★★☆☆☆ (2/5)</option>
                             <option>★☆☆☆☆ (1/5)</option>
                           </select>
-                        </div>
-                        {/* Message */}
+                        </div> */}
+                    {/* Message
                         <div className="col-12 bg-light-input">
                           <textarea
                             className="form-control"
@@ -1287,10 +1298,10 @@ Page content START */}
                             placeholder="Your review"
                             rows={3}
                             defaultValue={""}
-                          />
-                        </div>
-                        {/* Button */}
-                        <div className="col-12">
+                          /> */}
+                    {/* </div> */}
+                    {/* Button */}
+                    {/* <div className="col-12">
                           <button
                             type="submit"
                             className="btn btn-primary mb-0"
@@ -1298,8 +1309,8 @@ Page content START */}
                             Post Review
                           </button>
                         </div>
-                      </form>
-                    </div>
+                      </form> */}
+                    {/* </div> */}
                     {/* Leave Review END */}
                   </div>
                   {/* Content END */}
@@ -1561,34 +1572,48 @@ Page content START */}
                       {/* Title */}
                       <div className="d-flex justify-content-between align-items-center mb-3">
                         <h4 className="mb-0">Your Progress</h4>
-                       </div>
-                      
+                      </div>
+
                       {/* Progress bar */}
-                      <div className="progress progress-sm bg-primary bg-opacity-15 mb-3" style={{ height: "10px" }}>
+                      <div
+                        className="progress progress-sm bg-primary bg-opacity-15 mb-3"
+                        style={{ height: "10px" }}
+                      >
                         <div
                           className="progress-bar bg-primary animate-all"
                           role="progressbar"
-                          style={{ width: `${courseProgressPercentage}%`, transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)" }}
+                          style={{
+                            width: `${courseProgressPercentage}%`,
+                            transition:
+                              "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+                          }}
                           aria-valuenow={courseProgressPercentage}
                           aria-valuemin={0}
                           aria-valuemax={100}
                         />
                       </div>
-                      
+
                       {/* Stats */}
                       <div className="d-flex justify-content-between align-items-center mb-4">
                         <span className="h6 fw-light mb-0 text-muted">
                           <i className="fas fa-book-open text-primary me-2" />
-                          {completedLecturesCount} of {totalLecturesCount} Lectures Completed
+                          {completedLecturesCount} of {totalLecturesCount}{" "}
+                          Lectures Completed
                         </span>
-                        <span className="h6 mb-0 text-primary fw-bold">{courseProgressPercentage}%</span>
+                        <span className="h6 mb-0 text-primary fw-bold">
+                          {courseProgressPercentage}%
+                        </span>
                       </div>
-                      
-                      {courseProgressPercentage === 100 && 
-                      <a href="#" className="btn btn-success mb-0" onClick={() => genratecertificate()}>
-                            Certificate
-                          </a>
-                      }
+
+                      {courseProgressPercentage === 100 && (
+                        <a
+                          href="#"
+                          className="btn btn-success mb-0"
+                          onClick={() => genratecertificate()}
+                        >
+                          Certificate
+                        </a>
+                      )}
                     </div>
                   )}
                   {Pay_Course ? null : (
