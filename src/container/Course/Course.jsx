@@ -1,11 +1,22 @@
 import React from "react";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
 import useSerch from "../../Hook/useSerch";
-import Carousel from 'react-material-ui-carousel';
+import Carousel from "react-material-ui-carousel";
 import { useNavigate, useParams } from "react-router-dom";
-
+import {
+  useAddWhistlistMutation,
+  useDeleteWhistlistMutation,
+  useGetWhistlistQuery,
+  useUpdateWhistlistMutation,
+} from "../../redux/Api/wishlist.api";
+import { useSelector } from "react-redux";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 function Course(props) {
+  const auth = useSelector((state) => state.auth);
+  console.log("checklogin", auth?.user?.data);
+
   const { data, error, isLoading } = useGetallcourseQuery();
   console.log(data?.data);
 
@@ -21,17 +32,68 @@ function Course(props) {
 
   let course;
   if (params._id) {
-    course = filterData.filter((v) => v.categories_id === params._id)
+    course = filterData.filter((v) => v.categories_id === params._id);
   } else {
-    course = filterData
+    course = filterData;
   }
 
   console.log("courseeeeee", course);
-  
 
   const handlecilck = (_id) => {
-    navigate(`/course-details/${_id}`)
-  }
+    navigate(`/course-details/${_id}`);
+  };
+
+  const { data: whistlist } = useGetWhistlistQuery();
+  console.log(whistlist?.data);
+
+  const [addWhistlist] = useAddWhistlistMutation();
+  const [updateWhitlist] = useUpdateWhistlistMutation();
+
+  const handlewhistlist = async (course_id) => {
+    let whistlistUser = whistlist?.data?.find(
+      (v) => v?.user_id === auth?.user?.data?._id,
+    );
+
+    let existData = whistlistUser?.items?.find((v) => v.course === course_id);
+    console.log(existData);
+
+    if (existData) {
+      let deletdata = whistlistUser?.items.filter(
+        (v) => v._id !== existData._id,
+      );
+      console.log(deletdata);
+
+      await updateWhitlist({
+        _id: whistlistUser._id,
+        user_id: auth?.user?.data?._id,
+        items: deletdata,
+      });
+
+      return;
+    }
+
+    const ItemsData = [...(whistlistUser?.items || [])];
+
+    ItemsData.push({
+      course: course_id,
+    });
+
+    console.log(ItemsData);
+
+    //if user alredy exist obly
+    if (whistlistUser) {
+      await updateWhitlist({
+        _id: whistlistUser._id,
+        user_id: auth?.user?.data?._id,
+        items: ItemsData,
+      });
+    } else {
+      await addWhistlist({
+        user_id: auth?.user?.data?._id,
+        items: ItemsData,
+      });
+    }
+  };
 
   return (
     <main>
@@ -130,66 +192,92 @@ Page content START */}
               {/* Search option END */}
               {/* Course Grid START */}
               <div className="row g-4">
-                {course?.map((v) => (
-                  <div className="col-sm-6 col-xl-4" onClick={() => handlecilck(v._id)}>
-                    <div className="card shadow h-100">
-                      {/* Image */}
-                      <Carousel>
-                        {v.course_img.map((v, i) => (
-                          <img
-                            key={i}
-                            src={v?.url}
-                            className="card-img-top"
-                            alt="course"
-                          />
-                        ))}
-                      </Carousel>
-                      {/* Card body */}
-                      <div className="card-body pb-0">
-                        <div className="d-flex justify-content-between mb-2">
-                          <a
-                            href="#"
-                            className="badge bg-purple bg-opacity-10 text-purple"
-                          ></a>
-                          <a href="#" className="h6 fw-light mb-0">
-                            <i className="far fa-heart" />
-                          </a>
+                {course?.map((v) => {
+                  let whistlistUser = whistlist?.data?.find(
+                    (v) => v.user_id === auth?.user?.data?._id,
+                  );
+
+                  let existData = whistlistUser?.items?.some(
+                    (v2) => v2.course === v._id,
+                  );
+                  console.log(existData);
+
+                  return (
+                    <div className="col-sm-6 col-xl-4">
+                      <a
+                        href="#"
+                        className="h6 fw-light mb-0"
+                        onClick={() => handlewhistlist(v._id)}
+                      >{
+                        existData? <FavoriteIcon /> : <FavoriteBorderIcon />
+                      }
+                        
+                      </a>
+
+                      <div
+                        className="card shadow h-100 "
+                        onClick={() => handlecilck(v._id)}
+                      >
+                        {/* Image */}
+                        <Carousel>
+                          {v.course_img.map((v, i) => (
+                            <img
+                              key={i}
+                              src={v?.url}
+                              className="card-img-top"
+                              alt="course"
+                            />
+                          ))}
+                        </Carousel>
+                        {/* Card body */}
+                        <div className="card-body pb-0">
+                          <div className="d-flex justify-content-between mb-2">
+                            <a
+                              href="#"
+                              className="badge bg-purple bg-opacity-10 text-purple"
+                            ></a>
+                            <a href="#" className="h6 fw-light mb-0">
+                              <i className="far fa-heart" />
+                            </a>
+                          </div>
+
+                          <h5 className="card-title">
+                            <a href="#">{v.name}</a>
+                          </h5>
+
+                          <p className="mb-2 text-truncate-2">
+                            {v.description}
+                          </p>
+
+                          {/* Rating */}
+                          <ul className="list-inline mb-0">
+                            <li className="list-inline-item me-0 small">
+                              <i className="fas fa-star text-warning" />
+                            </li>
+                            <li className="list-inline-item ms-2 h6 fw-light mb-0">
+                              4.0/5.0
+                            </li>
+                          </ul>
                         </div>
 
-                        <h5 className="card-title">
-                          <a href="#">{v.name}</a>
-                        </h5>
-
-                        <p className="mb-2 text-truncate-2">{v.description}</p>
-
-                        {/* Rating */}
-                        <ul className="list-inline mb-0">
-                          <li className="list-inline-item me-0 small">
-                            <i className="fas fa-star text-warning" />
-                          </li>
-                          <li className="list-inline-item ms-2 h6 fw-light mb-0">
-                            4.0/5.0
-                          </li>
-                        </ul>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="card-footer pt-0 pb-3">
-                        <hr />
-                        <div className="d-flex justify-content-between">
-                          <span className="h6 fw-light mb-0">
-                            <i className="far fa-clock text-danger me-2" />
-                            12h 56m
-                          </span>
-                          <span className="h6 fw-light mb-0">
-                            <i className="fas fa-table text-orange me-2" />
-                            15 lectures
-                          </span>
+                        {/* Footer */}
+                        <div className="card-footer pt-0 pb-3">
+                          <hr />
+                          <div className="d-flex justify-content-between">
+                            <span className="h6 fw-light mb-0">
+                              <i className="far fa-clock text-danger me-2" />
+                              12h 56m
+                            </span>
+                            <span className="h6 fw-light mb-0">
+                              <i className="fas fa-table text-orange me-2" />
+                              15 lectures
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               {/* Course Grid END */}
               {/* Pagination START */}
@@ -813,5 +901,4 @@ Newsletter END */}
     </main>
   );
 }
-
 export default Course;
