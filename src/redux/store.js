@@ -15,6 +15,7 @@ import { progessApi } from './Api/progess.api'
 import { certificateApi } from './Api/certificate.api'
 import { reviewApi } from './Api/review.api'
 import { WhistlistApi } from './Api/wishlist.api'
+import { blogApi } from './Api/blog.api'
 
 export const store = configureStore({
   reducer: {
@@ -34,7 +35,7 @@ export const store = configureStore({
     [certificateApi.reducerPath] : certificateApi.reducer,
     [reviewApi.reducerPath] : reviewApi.reducer,
     [WhistlistApi.reducerPath] : WhistlistApi.reducer,
-
+    [blogApi.reducerPath] : blogApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -52,6 +53,6 @@ export const store = configureStore({
       certificateApi.middleware,
       reviewApi.middleware,
       WhistlistApi.middleware,
-      
+      blogApi.middleware,
     ),
 })

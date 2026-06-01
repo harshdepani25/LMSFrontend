@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { createTheme, styled, useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -23,13 +23,14 @@ import { NavLink } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import Switch from "@mui/material/Switch";
 import { ThemeContext } from "../../../context/ThemeContext";
-import { useState } from "react";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import QuizIcon from "@mui/icons-material/Quiz";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import { useSelector } from "react-redux";
+import BookIcon from '@mui/icons-material/Book';
+import Blog from "../../Container/Blog/Blog";
 
 export default function Layout({ children }) {
   const theme = useTheme();
@@ -140,6 +141,7 @@ export default function Layout({ children }) {
         icon: <ConfirmationNumberIcon />,
         to: "/admin/coupan",
       },
+      { label: "Blog", icon: <BookIcon />, to: "/admin/blog" },
     ];
   } else {
     listBox = [
@@ -154,6 +156,7 @@ export default function Layout({ children }) {
         icon: <ConfirmationNumberIcon />,
         to: "/admin/coupan",
       },
+      { label: "Blog", icon: <BookIcon />, to: "/admin/blog" },
     ];
   }
 

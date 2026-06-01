@@ -12,7 +12,6 @@ import { useDispatch } from "react-redux";
 import { ThemeContext } from "../context/ThemeContext.jsx";
 import Category from "../container/Category/Category.jsx";
 import Course from "../container/Course/Course.jsx";
-import BlogDetail from "../container/BlogDetail/BlogDetail.jsx";
 import CourseDetails from "../container/Course/CourseDetails.jsx";
 import Quiz from "../container/Quiz/Quiz.jsx";
 import CourseVideoPlayer from "../container/Course/CourseVideoPlayer.jsx";
@@ -21,6 +20,7 @@ import About from "../container/About/About.jsx";
 import Contact from "../container/Contact/Contact.jsx";
 import Pricing from "../container/Pricing/Pricing.jsx";
 import Blog from "../container/Blog/Blog.jsx";
+import BlogDetail from "../container/Blog/BlogDetail.jsx";
 
 function UserRouter() {
   const themedata = useContext(ThemeContext);
@@ -45,11 +45,11 @@ function UserRouter() {
         <Route path="/course/:_id" element={<Course />} />
         <Route path="/course-details/:_id" element={<CourseDetails />} />
 
-        <Route path="/blog-detail" element={<BlogDetail />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/blog-details/:_id" element={<BlogDetail />} />
         <Route path="/quiz/:_id" element={<Quiz />} />
 
         <Route path="/cart" element={<Cart />} />

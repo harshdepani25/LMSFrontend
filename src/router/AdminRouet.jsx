@@ -12,6 +12,7 @@ import QuizContent from "../Admin/Container/Quiz/QuizContent";
 import Content from "../Admin/Container/Content/Content";
 import PrivteRouet from "./PrivteRouet";
 import Coupan from "../Admin/Container/Coupan/Coupan";
+import Blog from "../Admin/Container/Blog/Blog";
 
 function AdminRouet(props) {
   const Theme = useContext(ThemeContext);
@@ -41,6 +42,7 @@ function AdminRouet(props) {
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/quiz-content/:_id" element={<QuizContent />} />
             <Route path="/coupan" element={<Coupan />} />
+             <Route path="/blog" element={<Blog />} />
           </Route>
         </Routes>
       </Layout>
