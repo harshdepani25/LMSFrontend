@@ -15,7 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { CheackAuth } from "../../../Redux/slice/auth.slice";
+import { CheackAuth } from "../../../redux/slice/auth.slice";
 import {
   useAddBlogMutation,
   useDeleteBlogMutation,

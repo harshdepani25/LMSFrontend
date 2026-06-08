@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useGetquizContentQuery } from "../../Redux/Api/QuizContent.Api";
-import { useGetquizQuery } from "../../Redux/Api/Quiz.Api";
+import { useGetquizContentQuery } from "../../redux/Api/QuizContent.Api";
+import { useGetquizQuery } from "../../redux/Api/Quiz.Api";
 import { useParams } from "react-router-dom";
 
 function Quiz() {
