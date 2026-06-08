@@ -355,7 +355,7 @@ function Header(props) {
                 <a
                   href="#"
                   onClick={() => dispatch(LogoutUser(auth.user.data._id))}
-                  className="btn btn-sm btn-primary-soft me-2 mb-0 border-primary rounded"
+                  className="btn btn-sm btn-primary-soft me-3 mb-0 border-primary rounded"
                   style={{ padding: "8px 10px", fontSize: "15px" }}
                 >
                   Sign Out

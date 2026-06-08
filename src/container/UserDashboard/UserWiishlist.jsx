@@ -1,48 +1,47 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import Carousel from "react-material-ui-carousel";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import {
   useGetWhistlistQuery,
   useUpdateWhistlistMutation,
 } from "../../redux/Api/wishlist.api";
 import { useGetallcourseQuery } from "../../redux/Api/Course.api";
-import Carousel from "react-material-ui-carousel";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import UserHeader from "./componets/UserHeader";
+import UserSildeBar from "./componets/UserSildeBar";
 
-function UserWiishlist(props) {
+function UserWiishlist() {
   const auth = useSelector((state) => state.auth);
-  console.log("checklogin", auth?.user?.data);
 
   const { data: wishlist } = useGetWhistlistQuery();
   const { data: course } = useGetallcourseQuery();
-  console.log("wishlits", wishlist?.data);
   const [updateWhitlist] = useUpdateWhistlistMutation();
-  const filterwishlist = wishlist?.data?.find(
-    (v) => v.user_id === auth?.user?.data?._id,
-  );
-  console.log("filterwishlist", filterwishlist);
 
-  const filtercoure = course?.data?.filter((v) =>
-    filterwishlist?.items?.some((w) => w.course === v._id),
+  const filterwishlist = wishlist?.data?.find(
+    (item) => item.user_id === auth?.user?.data?._id,
   );
-  console.log("filter course", filtercoure);
+
+  const filtercoure = course?.data?.filter((item) =>
+    filterwishlist?.items?.some(
+      (wishlistItem) => wishlistItem.course === item._id,
+    ),
+  );
 
   const handlewhistlist = async (course_id) => {
-    let existData = filterwishlist?.items?.find((v) => v.course === course_id);
-    console.log(existData);
+    const existData = filterwishlist?.items?.find(
+      (item) => item.course === course_id,
+    );
 
     if (existData) {
-      let deletdata = filterwishlist?.items.filter(
-        (v) => v._id !== existData._id,
+      const deletdata = filterwishlist?.items.filter(
+        (item) => item._id !== existData._id,
       );
-      console.log(deletdata);
 
       await updateWhitlist({
         _id: filterwishlist._id,
         user_id: auth?.user?.data?._id,
         items: deletdata,
       });
-
-      return;
     }
   };
 
@@ -53,142 +52,146 @@ function UserWiishlist(props) {
       items: [],
     });
   };
-  return (
-    <div>
-      <main>
-        {/* =======================
-Page Banner START */}
-        <section className="py-0">
-          <div className="container">
-            <div className="row">
-              <div className="col-12">
-                <div className="bg-light p-4 text-center rounded-3">
-                  <h1 className="m-0">Wishlist</h1>
-                  {/* Breadcrumb */}
-                  <div className="d-flex justify-content-center">
-                    <nav aria-label="breadcrumb">
-                      <ol className="breadcrumb breadcrumb-dots mb-0">
-                        <li className="breadcrumb-item">
-                          <a href="#">Home</a>
-                        </li>
-                        <li className="breadcrumb-item">
-                          <a href="#">Courses</a>
-                        </li>
-                        <li
-                          className="breadcrumb-item active"
-                          aria-current="page"
-                        >
-                          Wishlist
-                        </li>
-                      </ol>
-                    </nav>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* =======================
-Page Banner END */}
-        {/* =======================
-Page content START */}
-        <section className="pt-5">
-          <div className="container">
-            {/* Content and button */}
-            <div className="d-sm-flex justify-content-sm-between align-items-center mb-4">
-              <h5 className="mb-2 mb-sm-0">
-                You have {filtercoure?.length} items in wishlist
-              </h5>
-              <div className="text-end">
-                {" "}
-                <button
-                  className="btn btn-danger-soft mb-0"
-                  onClick={() => handleRemoveall()}
-                >
-                  <i className="fas fa-trash me-2" />
-                  Remove all
-                </button>{" "}
-              </div>
-            </div>
-            <div className="row g-4">
-              {/* Card item START */}
-              {filtercoure?.map((v) => (
-                <div className="col-sm-6 col-lg-4 col-xl-3">
-                  <div className="card shadow">
-                    {/* Image */}
-                    <Carousel>
-                      {v?.course_img?.map((v, i) => (
-                        <img
-                          key={i}
-                          src={v?.url}
-                          className="card-img-top"
-                          alt="course"
-                        />
-                      ))}
-                    </Carousel>
-                    <div className="card-body pb-0">
-                      {/* Badge and favorite */}
-                      <div className="d-flex justify-content-between mb-2">
-                        <a
-                          href="#"
-                          className="h6 fw-light mb-0"
-                          onClick={() => handlewhistlist(v._id)}
-                        >
-                          <FavoriteIcon />
-                        </a>
-                      </div>
-                      {/* Title */}
-                      <h5 className="card-title fw-normal">
-                        <a href="#">{v.desciption}</a>
-                      </h5>
-                      {/* Rating star */}
-                      <ul className="list-inline mb-0">
-                        <li className="list-inline-item me-0 small">
-                          <i className="fas fa-star text-warning" />
-                        </li>
-                        <li className="list-inline-item me-0 small">
-                          <i className="fas fa-star text-warning" />
-                        </li>
-                        <li className="list-inline-item me-0 small">
-                          <i className="fas fa-star text-warning" />
-                        </li>
-                        <li className="list-inline-item me-0 small">
-                          <i className="fas fa-star text-warning" />
-                        </li>
-                        <li className="list-inline-item me-0 small">
-                          <i className="fas fa-star-half-alt text-warning" />
-                        </li>
-                        <li className="list-inline-item ms-2 h6 fw-light mb-0">
-                          4.5/5.0
-                        </li>
-                      </ul>
-                    </div>
-                    {/* Card footer */}
-                    <div className="card-footer pt-0 pb-3">
-                      <hr />
-                      <div className="d-flex justify-content-between ">
-                        <span className="h6 fw-light mb-0">
-                          <i className="far fa-clock text-danger me-2" />
-                          9h 56m
-                        </span>
-                        <span className="h6 fw-light mb-0">
-                          <i className="fas fa-table text-orange me-2" />
-                          65 lectures
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
 
-              {/* Card item END */}
+  return (
+    <main>
+      <UserHeader />
+
+      <section className="pt-0">
+        <div className="container">
+          <div className="row">
+            <UserSildeBar />
+
+            <div className="col-xl-9">
+              <div className="card border rounded-3">
+                <div className="card-header border-bottom">
+                  <div className="d-sm-flex justify-content-sm-between align-items-center">
+                    <div>
+                      <h3 className="mb-1">My Wishlist</h3>
+                      <p className="mb-0">
+                        You have {filtercoure?.length || 0} items in your
+                        wishlist
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn btn-danger-soft mt-3 mt-sm-0"
+                      onClick={handleRemoveall}
+                      disabled={!filtercoure?.length}
+                    >
+                      <i className="fas fa-trash me-2" />
+                      Remove all
+                    </button>
+                  </div>
+                </div>
+
+                <div className="card-body">
+                  {filtercoure?.length ? (
+                    <div className="row g-4">
+                      {filtercoure.map((item) => (
+                        <div
+                          className="col-sm-6 col-lg-4"
+                          key={item._id}
+                        >
+                          <div className="card h-100 shadow">
+                            <Carousel
+                              autoPlay={false}
+                              animation="slide"
+                              indicators={
+                                (item?.course_img?.length || 0) > 1
+                              }
+                              navButtonsAlwaysInvisible={
+                                (item?.course_img?.length || 0) <= 1
+                              }
+                            >
+                              {item?.course_img?.map((image, index) => (
+                                <img
+                                  key={image?._id || image?.url || index}
+                                  src={image?.url}
+                                  className="card-img-top"
+                                  alt={item?.desciption || "Course"}
+                                  style={{
+                                    height: "180px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              ))}
+                            </Carousel>
+
+                            <div className="card-body pb-0">
+                              <div className="d-flex justify-content-end mb-2">
+                                <button
+                                  type="button"
+                                  className="btn btn-link text-danger p-0"
+                                  onClick={() =>
+                                    handlewhistlist(item._id)
+                                  }
+                                  aria-label="Remove course from wishlist"
+                                >
+                                  <FavoriteIcon />
+                                </button>
+                              </div>
+
+                              <h5 className="card-title fw-normal">
+                                {item.desciption}
+                              </h5>
+
+                              <ul className="list-inline mb-0">
+                                <li className="list-inline-item me-0 small">
+                                  <i className="fas fa-star text-warning" />
+                                </li>
+                                <li className="list-inline-item me-0 small">
+                                  <i className="fas fa-star text-warning" />
+                                </li>
+                                <li className="list-inline-item me-0 small">
+                                  <i className="fas fa-star text-warning" />
+                                </li>
+                                <li className="list-inline-item me-0 small">
+                                  <i className="fas fa-star text-warning" />
+                                </li>
+                                <li className="list-inline-item me-0 small">
+                                  <i className="fas fa-star-half-alt text-warning" />
+                                </li>
+                                <li className="list-inline-item ms-2 h6 fw-light mb-0">
+                                  4.5/5.0
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div className="card-footer pt-0 pb-3">
+                              <hr />
+                              <div className="d-flex justify-content-between">
+                                <span className="h6 fw-light mb-0">
+                                  <i className="far fa-clock text-danger me-2" />
+                                  9h 56m
+                                </span>
+                                <span className="h6 fw-light mb-0">
+                                  <i className="fas fa-table text-orange me-2" />
+                                  65 lectures
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-5">
+                      <i className="bi bi-heart display-4 text-muted" />
+                      <h5 className="mt-3 mb-1">Your wishlist is empty</h5>
+                      <p className="text-muted mb-0">
+                        Courses added to your wishlist will appear here.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </section>
-        {/* =======================
-Page content END */}
-      </main>
-    </div>
+        </div>
+      </section>
+    </main>
   );
 }
 

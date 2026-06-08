@@ -4,6 +4,8 @@ import { LogoutUser, editProfile } from "../../redux/slice/auth.slice";
 import { setalert } from "../../redux/slice/alert.slice";
 import { NavLink, useNavigate } from "react-router-dom";
 import { IMAGE_URL } from "../../utility/url";
+import UserHeader from "./componets/UserHeader";
+import UserSildeBar from "./componets/UserSildeBar";
 
 function UserEditProfile(props) {
   const navigate = useNavigate();
@@ -87,92 +89,7 @@ function UserEditProfile(props) {
       <main>
         {/* =======================
 Page Banner START */}
-        <section className="pt-0">
-          <div className="container-fluid px-0">
-            <div
-              className="card bg-blue h-100px h-md-200px rounded-0"
-              style={{
-                background:
-                  "url(assets/images/pattern/04.png) no-repeat center center",
-                backgroundSize: "cover",
-              }}
-            ></div>
-          </div>
-          <div className="container mt-n4">
-            <div className="row">
-              <div className="col-12">
-                <div className="card bg-transparent card-body pb-0 ps-0 mt-2 mt-sm-0">
-                  <div className="row d-sm-flex justify-sm-content-between mt-2 mt-md-0">
-                    {/* Avatar */}
-                    <div className="col-auto">
-                      <div className="avatar avatar-xxl position-relative mt-n3">
-                        <img
-                          className="avatar-img rounded-circle border border-white border-3 shadow"
-                          src={auth?.user?.data?.pfp[0]?.url || "../../../public/assets/images/avatar/01.jpg"}
-                          alt="avatar"
-                        />
-                        <span className="badge bg-success text-white rounded-pill position-absolute top-50 start-100 translate-middle mt-4 mt-md-5 ms-n3 px-md-3">
-                          Pro
-                        </span>
-                      </div>
-                    </div>
-                    {/* Profile info */}
-                    <div className="col d-sm-flex justify-content-between align-items-center">
-                      <div>
-                        <h1 className="my-1 fs-4">{profileData.fullName}</h1>
-                        <ul className="list-inline mb-0">
-                          <li className="list-inline-item me-3 mb-1 mb-sm-0">
-                            <span className="h6">255</span>
-                            <span className="text-body fw-light">points</span>
-                          </li>
-                          <li className="list-inline-item me-3 mb-1 mb-sm-0">
-                            <span className="h6">7</span>
-                            <span className="text-body fw-light">
-                              Completed courses
-                            </span>
-                          </li>
-                          <li className="list-inline-item me-3 mb-1 mb-sm-0">
-                            <span className="h6">52</span>
-                            <span className="text-body fw-light">
-                              Completed lessons
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* Button */}
-                      <div className="mt-2 mt-sm-0">
-                        <NavLink
-                          to="/user-course"
-                          className="btn btn-outline-primary mb-0"
-                        >
-                          View my courses
-                        </NavLink>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* Advanced filter responsive toggler START */}
-                {/* Divider */}
-                <hr className="d-xl-none" />
-                <div className="col-12 col-xl-3 d-flex justify-content-between align-items-center">
-                  <a className="h6 mb-0 fw-bold d-xl-none" href="#">
-                    Menu
-                  </a>
-                  <button
-                    className="btn btn-primary d-xl-none"
-                    type="button"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasNavbar"
-                    aria-controls="offcanvasNavbar"
-                  >
-                    <i className="fas fa-sliders-h" />
-                  </button>
-                </div>
-                {/* Advanced filter responsive toggler END */}
-              </div>
-            </div>
-          </div>
-        </section>
+        <UserHeader />
         {/* =======================
 Page Banner END */}
         {/* =======================
@@ -181,84 +98,7 @@ Page content START */}
           <div className="container">
             <div className="row">
               {/* Right sidebar START */}
-              <div className="col-xl-3">
-                {/* Responsive offcanvas body START */}
-                <nav className="navbar navbar-light navbar-expand-xl mx-0">
-                  <div
-                    className="offcanvas offcanvas-end"
-                    tabIndex={-1}
-                    id="offcanvasNavbar"
-                    aria-labelledby="offcanvasNavbarLabel"
-                  >
-                    {/* Offcanvas header */}
-                    <div className="offcanvas-header bg-light">
-                      <h5 className="offcanvas-title" id="offcanvasNavbarLabel">
-                        My profile
-                      </h5>
-                      <button
-                        type="button"
-                        className="btn-close text-reset"
-                        data-bs-dismiss="offcanvas"
-                        aria-label="Close"
-                      />
-                    </div>
-                    {/* Offcanvas body */}
-                    <div className="offcanvas-body p-3 p-xl-0">
-                      <div className="bg-dark border rounded-3 pb-0 p-3 w-100">
-                        {/* Dashboard menu */}
-                        <div className="list-group list-group-dark list-group-borderless">
-                          <NavLink to={"/user-dashboard"}>
-                            <a className="list-group-item">
-                              <i className="bi bi-ui-checks-grid fa-fw me-2" />
-                              Dashboard
-                            </a>
-                          </NavLink>
-
-                          <NavLink to={"/user-course"}>
-                            <a className="list-group-item">
-                              <i className="bi bi-basket fa-fw me-2" />
-                              My Courses
-                            </a>
-                          </NavLink>
-
-                          <NavLink to={"/user-paymentinfo"}>
-                            <a className="list-group-item">
-                              <i className="bi bi-credit-card-2-front fa-fw me-2" />
-                              Payment info
-                            </a>
-                          </NavLink>
-
-                          <NavLink to={"/user-wishlist"}>
-                            <a className="list-group-item">
-                              <i className="bi bi-cart-check fa-fw me-2" />
-                              Wishlist
-                            </a>
-                          </NavLink>
-
-                          <NavLink to={"/user-profilEdit"}>
-                            <a className="list-group-item active">
-                              <i className="bi bi-pencil-square fa-fw me-2" />
-                              Edit Profile
-                            </a>
-                          </NavLink>
-
-                          <a
-                            className="list-group-item text-danger bg-danger-soft-hover text-start cursor-pointer"
-                            onClick={() => (
-                              dispatch(LogoutUser(auth.user.data._id)),
-                              navigate("/")
-                            )}
-                          >
-                            <i className="fas fa-sign-out-alt fa-fw me-2" />
-                            Sign Out
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </nav>
-                {/* Responsive offcanvas body END */}
-              </div>
+              <UserSildeBar />
               {/* Right sidebar END */}
               {/* Main content START */}
               <div className="col-xl-9">
@@ -295,19 +135,7 @@ Page content START */}
                               accept="image/*"
                               onChange={handleAvatarChange}
                             />
-                            <button
-                              type="button"
-                              className="btn btn-ghost-danger mb-0 ms-2"
-                              onClick={() => {
-                                setAvatarFile(null);
-                                setProfileData((prev) => ({
-                                  ...prev,
-                                  avatar: ""
-                                }));
-                              }}
-                            >
-                              Delete
-                            </button>
+                            
                           </div>
                         </div>
                       </div>
