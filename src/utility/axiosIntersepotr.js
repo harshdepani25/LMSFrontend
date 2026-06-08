@@ -7,7 +7,6 @@ export const axiosinstance = axios.create({
     withCredentials : true
 });
 
-
 axiosinstance.interceptors.request.use(function (config) {
     // Do something before request is sent
     return config;
