@@ -12,7 +12,7 @@ import {
   useDeletequizContentMutation,
   useGetquizContentQuery,
   useUpdatequizContentMutation,
-} from "../../../Redux/Api/QuizContent.Api";
+} from "../../../redux/Api/quizContent.api";
 
 function QuizContent() {
   const param = useParams();
