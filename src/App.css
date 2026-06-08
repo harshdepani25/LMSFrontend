@@ -1,3 +1,67 @@
 .error{
   color: red;
 }
+
+/* Premium Comments Section Styling */
+.comment-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background-color: #ffffff;
+}
+.comment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(15, 98, 254, 0.15) !important;
+}
+
+.avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid white;
+}
+
+.action-btn {
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary-custom {
+  background: linear-gradient(135deg, #0f62fe 0%, #002d9c 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.btn-primary-custom:hover {
+  background: linear-gradient(135deg, #002d9c 0%, #001a66 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.3);
+}
+
+.comment-input-area {
+  border: 1.5px solid #dee2e6;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.comment-input-area:focus {
+  border-color: #0f62fe;
+  box-shadow: 0 0 0 4px rgba(15, 98, 254, 0.15);
+  background-color: #fff;
+}
+
+.login-prompt-card {
+  border: 1px dashed rgba(15, 98, 254, 0.3) !important;
+  background-color: rgba(15, 98, 254, 0.02);
+  border-radius: 12px;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+}
+

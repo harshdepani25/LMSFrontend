@@ -22405,6 +22405,8 @@ html[dir=rtl] .choices__input {
 
 .dark .dropdown-menu,
 .dark .card,
+.dark .card-header,
+.dark .form-control,
 .dark .bg-body {
   background-color: #14191E !important;
 }
@@ -22412,6 +22414,7 @@ html[dir=rtl] .choices__input {
 .dark .dropdown-item, 
 .dark .dropdown-menu,
 .dark .nav-link,
+.dark .td,
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6,
 .dark .h1, .dark .h2, .dark .h3, .dark .h4, .dark .h5, .dark .h6,
 .dark h1>a, .dark h2>a, .dark h3>a, .dark h4>a, .dark h5>a, .dark h6>a,

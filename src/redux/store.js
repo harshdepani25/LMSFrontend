@@ -16,6 +16,9 @@ import { certificateApi } from './Api/certificate.api'
 import { reviewApi } from './Api/review.api'
 import { WhistlistApi } from './Api/wishlist.api'
 import { blogApi } from './Api/blog.api'
+import { tagApi } from './Api/tag.api'
+import { likeApi } from './Api/like.api'
+import { commentApi } from './Api/blogComment.api'
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +39,10 @@ export const store = configureStore({
     [reviewApi.reducerPath] : reviewApi.reducer,
     [WhistlistApi.reducerPath] : WhistlistApi.reducer,
     [blogApi.reducerPath] : blogApi.reducer,
+    [tagApi.reducerPath] : tagApi.reducer,
+    [likeApi.reducerPath] : likeApi.reducer,
+    [commentApi.reducerPath] : commentApi.reducer,
+
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -54,5 +61,9 @@ export const store = configureStore({
       reviewApi.middleware,
       WhistlistApi.middleware,
       blogApi.middleware,
+      tagApi.middleware,
+      likeApi.middleware,
+      commentApi.middleware,
+      
     ),
 })

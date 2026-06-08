@@ -121,7 +121,7 @@ function Auth() {
           res.type === "auth/LoginUser/fulfilled" &&
           res.payload.role === "instructor"
         ) {
-          navigate("/instructor-dashboard");
+          navigate("/");
         } else if (
           res.type === "auth/LoginUser/fulfilled" &&
           res.payload.role === "user"

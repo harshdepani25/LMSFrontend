@@ -51,6 +51,15 @@ function Header(props) {
     dispatch(getCategory());
   }, []);
 
+  const handleprofile = () => {
+    const userRole = auth?.user?.data?.role || auth?.user?.role;
+    if (userRole === "instructor" || userRole === "admin") {
+      navigation("/instructor-dashboard");
+    } else {
+      navigation("/user-dashboard");
+    }
+  };
+
   const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     width: 62,
     height: 34,
@@ -319,8 +328,11 @@ function Header(props) {
               </li>
             </ul>
 
-            <MaterialUISwitch sx={{ m: 1 }} defaultChecked onChange={(e) => handleChange(e)} />
-      
+            <MaterialUISwitch
+              sx={{ m: 1 }}
+              defaultChecked
+              onChange={(e) => handleChange(e)}
+            />
 
             {/* Nav Search START */}
             <div className="nav my-3 my-xl-0 px-4 flex-nowrap align-items-center">
@@ -336,21 +348,39 @@ function Header(props) {
           {/* Main navbar END */}
           {/* Profile START */}
 
-          <div className="dropdown ms-1 ms-lg-0 flex">
+          {/* Profile START */}
+          <div className="dropdown ms-1 ms-lg-0 d-flex align-items-center">
             {auth.user ? (
-              <a
-                href="#"
-                onClick={() => dispatch(LogoutUser(auth.user.data._id))}
-                className="btn btn-sm btn-primary-soft me-2 mb-4 mb-sm-0 border-primary rounded"
-                style={{ padding: "8px 10px", fontSize: "15px" }}
-              >
-                Sign Out
-              </a>
+              <>
+                <a
+                  href="#"
+                  onClick={() => dispatch(LogoutUser(auth.user.data._id))}
+                  className="btn btn-sm btn-primary-soft me-2 mb-0 border-primary rounded"
+                  style={{ padding: "8px 10px", fontSize: "15px" }}
+                >
+                  Sign Out
+                </a>
+
+                <a onClick={() => handleprofile()}>
+                  <img
+                    className="avatar avatar-md rounded-circle me-3 flex-shrink-0"
+                    src={
+                      auth?.user?.data?.pfp[0]?.url ||
+                      "../../../public/assets/images/avatar/01.jpg"
+                    }
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      objectFit: "cover",
+                    }}
+                  />
+                </a>
+              </>
             ) : (
               <>
                 <div className="d-sm-flex align-items-center justify-content-center justify-content-lg-start">
                   <NavLink
-                    className="btn btn-sm btn-primary-soft me-2 mb-4 mb-sm-0 border-primary"
+                    className="btn btn-sm btn-primary-soft me-2 mb-0 border-primary"
                     style={{ padding: "6px 8px", fontSize: "15px" }}
                     to="/Auth"
                   >
@@ -358,7 +388,7 @@ function Header(props) {
                   </NavLink>
 
                   <NavLink
-                    className="btn btn-sm btn-primary-soft me-2 mb-4 mb-sm-0 border-primary"
+                    className="btn btn-sm btn-primary-soft me-2 mb-0 border-primary"
                     style={{ padding: "6px 8px", fontSize: "15px" }}
                     to="/Auth/Instructor"
                   >
@@ -368,6 +398,7 @@ function Header(props) {
               </>
             )}
           </div>
+          {/* Profile START */}
           {/* Profile START */}
         </div>
       </nav>

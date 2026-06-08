@@ -11,7 +11,7 @@ function PrivteRouet() {
   console.log("checklogin", auth, userdata);
 
   if (userdata) {
-    if (userdata.role === "instructor") {
+    if (userdata.role === "instructor" || userdata.role === "admin") {
       return <Outlet />;
     } else {
       return <Navigate to="/" />;

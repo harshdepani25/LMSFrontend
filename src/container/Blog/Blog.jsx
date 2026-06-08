@@ -1,10 +1,85 @@
-import React from "react";
+import React, { useState } from "react";
 import { useGetBlogQuery } from "../../redux/Api/blog.api";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useGettagQuery } from "../../redux/Api/tag.api";
+
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+const getMonthFromDate = (dateStr) => {
+  if (!dateStr) return null;
+  // Handle "DD/MM/YYYY" format from backend
+  const parts = dateStr.split('/');
+  if (parts && parts.length === 3) {
+    const monthIndex = parseInt(parts[1], 10) - 1;
+    if (monthIndex >= 0 && monthIndex < 12) {
+      return monthIndex;
+    }
+  }
+  // Fallback to standard JS Date
+  const d = new Date(dateStr);
+  if (!isNaN(d.getTime())) {
+    return d.getMonth();
+  }
+  return null;
+};
 
 function Blog(props) {
+  const param = useParams();
+  const navigate = useNavigate();
+
   const { data: blog } = useGetBlogQuery();
-  console.log(blog?.data);
+  
+  const { data: tag } = useGettagQuery();
+
+  const [selectedTag, setSelectedTag] = useState([]);
+  console.log("selectedtag", selectedTag);
+
+  const [selectedMonths, setSelectedMonths] = useState([]);
+  console.log("selectedMonths", selectedMonths);
+
+  const handleTagChange = (tag) => {
+    if (tag === "all") {
+      setSelectedTag([]);
+    } else {
+      if (selectedTag.includes(tag)) {
+        setSelectedTag(selectedTag.filter((id) => id !== tag));
+      } else {
+        setSelectedTag([...selectedTag, tag]);
+      }
+    }
+  };
+
+  const handleMonthChange = (month) => {
+    if (month === "all") {
+      setSelectedMonths([]);
+    } else {
+      if (selectedMonths.includes(month)) {
+        setSelectedMonths(selectedMonths.filter((m) => m !== month));
+      } else {
+        setSelectedMonths([...selectedMonths, month]);
+      }
+    }
+  };
+
+  let filteredBlogs = blog?.data;
+
+  if (selectedTag.length > 0) {
+    filteredBlogs = filteredBlogs.filter((v) => selectedTag.includes(v.tag));
+  } else if (param._id) {
+    filteredBlogs = filteredBlogs.filter((v) => v.tag === param._id);
+  }
+
+  if (selectedMonths.length > 0) {
+    filteredBlogs = filteredBlogs.filter((v) => {
+      const i = getMonthFromDate(v.date);
+      return i !== null && selectedMonths.includes(i);
+    });
+  }
+
+  console.log(filteredBlogs);
 
   return (
     <div>
@@ -62,63 +137,177 @@ Page Banner END */}
 Page content START */}
         <section className="position-relative pt-0">
           <div className="container">
-            <div
-              className="row g-4 filter-container overflow-hidden"
-              data-isotope='{"layoutMode": "masonry"}'
-            >
-              {/* Card item START */}
-              {blog?.data?.map((v) => (
-                <div className="col-sm-6 col-lg-4 grid-item">
-                  <div className="card">
-                    <div className="overflow-hidden rounded-3">
-                      <img
-                        src={v?.content_file[0]?.url}
-                        className="card-img"
-                        alt="course image"
-                      />
-                      {/* Overlay */}
-                      <div className="bg-overlay bg-dark opacity-4" />
-                      <div className="card-img-overlay d-flex align-items-start p-3">
-                        {/* badge */}
-                        <a href="#" className="badge bg-danger text-white">
-                          {v.tag}
-                        </a>
+            <div className="row g-4">
+              {/* Main content START */}
+              <div className="col-lg-8 col-xl-9">
+                <div className="row g-4 filter-container overflow-hidden">
+                  {/* Card item START */}
+                  {filteredBlogs?.map((v) => {
+                    const tagname = tag?.data?.find((v1) => v1._id === v.tag);
+
+                    return (
+                      <div
+                        key={v._id}
+                        className="col-sm-6 col-md-6 col-xl-4 grid-item"
+                      >
+                        <div className="card">
+                          <div className="overflow-hidden rounded-3">
+                            <img
+                              src={v?.content_file[0]?.url}
+                              className="card-img"
+                              alt="course image"
+                            />
+                            {/* Overlay */}
+                            <div className="bg-overlay bg-dark opacity-4" />
+                            <div className="card-img-overlay d-flex align-items-start p-3">
+                              {/* badge */}
+                              <a
+                                href="#"
+                                className="badge bg-danger text-white"
+                              >
+                                {tagname?.tag || "Unknown"}
+                              </a>
+                            </div>
+                          </div>
+                          {/* Card body */}
+                          <NavLink to={`/blog-details/${v._id}`}>
+                            <div className="card-body px-3">
+                              {/* Title */}
+                              <h5 className="card-title">
+                                <a href="#">{v.title}</a>
+                              </h5>
+                              <p className="text-truncate-2">{v.description}</p>
+                              {/* Info */}
+                              <div className="d-flex justify-content-between">
+                                <h6 className="mb-0">
+                                  <a href="#">{v.instructor.name}</a>
+                                </h6>
+                                <span className="small">{v.date}</span>
+                              </div>
+                            </div>
+                          </NavLink>
+                        </div>
                       </div>
-                    </div>
-                    {/* Card body */}
-                    <NavLink to={`/blog-details/${v._id}`}>
-                    <div className="card-body px-3">
-                      {/* Title */}
-                      <h5 className="card-title">
-                        <a href="#">{v.title}</a>
-                      </h5>
-                      <p className="text-truncate-2">
-                        {v.description}
-                      </p>
-                      {/* Info */}
-                      <div className="d-flex justify-content-between">
-                        <h6 className="mb-0">
-                          <a href="#">{v.instructor.name}</a>
-                        </h6>
-                        <span className="small">{v.date}</span>
-                      </div>
-                    </div>
-                    </NavLink>
+                    );
+                  })}
+                  {/* Card item END */}
+                </div>
+
+                {/* Load more button START */}
+                <div className="text-center mt-4">
+                  <a href="#" className="btn btn-primary-soft mb-0">
+                    Load more
+                    <i className="fas fa-sync ms-2" />
+                  </a>
+                </div>
+                {/* Load more button END */}
+              </div>
+              {/* Main content END */}
+
+              {/* Sidebar START */}
+
+              <div className="col-lg-4 col-xl-3 pt-5 pt-lg-0">
+                {/* Tag Filter Card */}
+                <div className="card card-body shadow p-4 mb-4">
+                  {/* Title */}
+                  <h4 className="mb-3">Tag</h4>
+                  {/* Category group */}
+                  <div className="col-12">
+                    <ul className="list-inline mb-0">
+                      {/* All Checkbox */}
+                      <li className="list-inline-item mb-2">
+                        <input
+                          type="checkbox"
+                          className="btn-check"
+                          checked={selectedTag.length === 0}
+                          onChange={() => (handleTagChange("all"),
+                            navigate("/blog"))}
+                          id="flexCheckDefaultAll"
+                        />
+                        <label
+                          className="btn btn-light btn-primary-soft-check"
+                          htmlFor="flexCheckDefaultAll"
+                        >
+                          All
+                        </label>
+                      </li>
+
+                      {/* Dynamic Checkboxes */}
+                      {tag?.data?.map((t) => {
+                        const isChecked = selectedTag.includes(t._id);
+                        return (
+                          <li key={t._id} className="list-inline-item mb-2">
+                            <input
+                              type="checkbox"
+                              className="btn-check"
+                              checked={isChecked}
+                              onChange={() => handleTagChange(t._id)}
+                              id={`flexCheckDefault_${t._id}`}
+                            />
+                            <label
+                              className="btn btn-light btn-primary-soft-check"
+                              htmlFor={`flexCheckDefault_${t._id}`}
+                            >
+                              {t?.tag}
+                            </label>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
                 </div>
-              ))}
 
-              {/* Card item END */}
-            </div>{" "}
-            {/* Row end */}
-            {/* Load more button START */}
-            <div className="text-center mt-4">
-              <a href="#" className="btn btn-primary-soft mb-0">
-                Load more
-                <i className="fas fa-sync ms-2" />
-              </a>
+                {/* Month Filter Card */}
+                <div className="card card-body shadow p-4 mb-4">
+                  {/* Title */}
+                  <h4 className="mb-3">Month</h4>
+                  {/* Category group */}
+                  <div className="col-12">
+                    <ul className="list-inline mb-0">
+                      {/* All Checkbox */}
+                      <li className="list-inline-item mb-2">
+                        <input
+                          type="checkbox"
+                          className="btn-check"
+                          id="flexCheckMonthAll"
+                          checked={selectedMonths.length === 0}
+                          onChange={() => handleMonthChange("all")}
+                        />
+                        <label
+                          className="btn btn-light btn-primary-soft-check"
+                          htmlFor="flexCheckMonthAll"
+                        >
+                          All
+                        </label>
+                      </li>
+
+                      {/* Dynamic Month Checkboxes */}
+                      {monthNames.map((monthName, monthIdx) => {
+                        const isChecked = selectedMonths.includes(monthIdx);
+                        return (
+                          <li key={monthIdx} className="list-inline-item mb-2">
+                            <input
+                              type="checkbox"
+                              className="btn-check"
+                              checked={isChecked}
+                              onChange={() => handleMonthChange(monthIdx)}
+                              id={`flexCheckMonth_${monthIdx}`}
+                            />
+                            <label
+                              className="btn btn-light btn-primary-soft-check"
+                              htmlFor={`flexCheckMonth_${monthIdx}`}
+                            >
+                              {monthName}
+                            </label>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              {/* Sidebar END */}
             </div>
-            {/* Load more button END */}
           </div>
         </section>
         {/* =======================

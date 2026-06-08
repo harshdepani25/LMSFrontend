@@ -31,6 +31,7 @@ import {
 import {
   useAddenrollmentMutation,
   useGetenrollmentQuery,
+  useUpdateenrollmentMutation,
 } from "../../redux/Api/enrollment.api";
 import { duration } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
@@ -44,7 +45,7 @@ import {
 import { useFormik } from "formik";
 
 function CourseDetails(props) {
-  const [rating, setRating] = useState()
+  const [rating, setRating] = useState();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -148,12 +149,12 @@ function CourseDetails(props) {
 
   console.log(enrollment);
 
-  const [addEnrollment] = useAddenrollmentMutation();
+  const [updateEnroll] = useUpdateenrollmentMutation();
 
   const Enroll_USER = enrollment?.data?.find(
     (v) => v?.user_id === auth?.user?.data?._id,
   );
-  console.log(Enroll_USER);
+
   const Enroll_id = Enroll_USER?._id;
 
   const sortedSections = sectiondata
@@ -197,9 +198,41 @@ function CourseDetails(props) {
   const firstIncompleteLecture = lecturesWithCompletion.find(
     (l) => !l.complete,
   );
+
   const firstIncompleteLectureId = firstIncompleteLecture?._id;
   const firstLectureId = lecturesWithCompletion[0]?._id;
   const [videoDur, setvideoTotalDuration] = useState({});
+
+  const existingProgressIndex = Enroll_USER?.progress?.findIndex(
+    (p) => p.course_id === filerdata?._id,
+  );
+
+  let updatedProgress = [];
+
+  if (existingProgressIndex !== -1) {
+    updatedProgress = Enroll_USER?.progress?.map((p) => {
+      if (p?.course_id === filerdata?._id) {
+        return {
+          ...p,
+          percentage: courseProgressPercentage,
+          totalLecture: totalLecturesCount,
+          completedLectures: completedLecturesCount,
+        };
+      }
+
+      return p;
+    });
+  } else {
+    updatedProgress = [
+      ...(Enroll_USER?.progress || []),
+      {
+        course_id: filerdata?._id,
+        percentage: courseProgressPercentage,
+        totalLecture: totalLecturesCount,
+        completedLectures: completedLecturesCount,
+      },
+    ];
+  }
 
   const onTimeUpdate = async (e, id) => {
     const duration = e.target.duration;
@@ -215,6 +248,11 @@ function CourseDetails(props) {
       ...prev,
       [id]: duration,
     }));
+
+    await updateEnroll({
+      _id: Enroll_USER?._id,
+      progress: updatedProgress,
+    });
   };
 
   console.log(videoDur);
@@ -917,25 +955,29 @@ Page content START */}
                     <div className="row mb-4">
                       <h5 className="mb-4">Our Student Reviews</h5>
                       {/* Rating info */}
-                     <div className="col-md-4 mb-3 mb-md-0">
+                      <div className="col-md-4 mb-3 mb-md-0">
                         <div className="text-center">
                           {/* Info */}
-                          <h2 className="mb-0">{avarageRating?avarageRating:0}</h2>
+                          <h2 className="mb-0">
+                            {avarageRating ? avarageRating : 0}
+                          </h2>
                           {/* Star */}
-                           <div className="d-sm-flex mt-1 mt-md-0 align-items-center mx-6">
-                          {[...Array(totalStars)].map((_, index) => {
-                                  return (
-                                      <ul className="list-inline mb-0">
-                                    <i
-                                      key={index}
-                                      className={
-                                        index < avarageRating
-                                          ? "fas fa-star text-warning"
-                                          : "far fa-star text-warning" }/>
-                                    </ul>
-                                  );
-                                })}
-                                </div>
+                          <div className="d-sm-flex mt-1 mt-md-0 align-items-center mx-6">
+                            {[...Array(totalStars)].map((_, index) => {
+                              return (
+                                <ul className="list-inline mb-0">
+                                  <i
+                                    key={index}
+                                    className={
+                                      index < avarageRating
+                                        ? "fas fa-star text-warning"
+                                        : "far fa-star text-warning"
+                                    }
+                                  />
+                                </ul>
+                              );
+                            })}
+                          </div>
                           <p className="mb-0">(Based on Course review)</p>
                         </div>
                       </div>
@@ -1117,48 +1159,54 @@ Page content START */}
                     </div>
                     {/* Review END */}
                     {/* Student review START */}
-                   
+
                     {/* Student review END */}
                     {/* Leave Review START */}
                     {filterReview?.map((v) => {
-                        const isMyReview = auth?.user?.data?._id === v?.user?._id;
-                        return (
-                          <div className="d-md-flex my-4">
-                            {/* Avatar */}
-                            <div className="avatar avatar-xl me-4 flex-shrink-0">
-                              <img className="avatar-img rounded-circle" src="../assets/images/avatar/09.jpg" alt="avatar" />
-                            </div>
-                            {/* Text */}
-                            <div>
-                              <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
-                                <h5 className="me-3 mb-0">{v?.user?.name}</h5>
-                                {/* Review star */}
+                      const isMyReview = auth?.user?.data?._id === v?.user?._id;
+                      return (
+                        <div className="d-md-flex my-4">
+                          {/* Avatar */}
+                          <div className="avatar avatar-xl me-4 flex-shrink-0">
+                            <img
+                              className="avatar-img rounded-circle"
+                              src="../assets/images/avatar/09.jpg"
+                              alt="avatar"
+                            />
+                          </div>
+                          {/* Text */}
+                          <div>
+                            <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
+                              <h5 className="me-3 mb-0">{v?.user?.name}</h5>
+                              {/* Review star */}
 
-                                {[...Array(totalStars)].map((_, index) => {
-                                  return (
-                                      <ul className="list-inline mb-0">
+                              {[...Array(totalStars)].map((_, index) => {
+                                return (
+                                  <ul className="list-inline mb-0">
                                     <i
                                       key={index}
                                       className={
                                         index < v.rating
                                           ? "fas fa-star text-warning"
-                                          : "far fa-star text-warning" }/>
-                                    </ul>
-                                  );
-                                })}
-                                {/* <ul className="list-inline mb-0">
+                                          : "far fa-star text-warning"
+                                      }
+                                    />
+                                  </ul>
+                                );
+                              })}
+                              {/* <ul className="list-inline mb-0">
                                   <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
                                   <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
                                   <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
                                   <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
                                   <li className="list-inline-item me-0"><i className="far fa-star text-warning" /></li>
                                 </ul> */}
-                              </div>
-                              {/* Info */}
-                              <p className="small mb-2">2 days ago</p>
-                              <p className="mb-2">{v.description}.</p>
-                              {/* Like and dislike button */}
-                              {/* {isMyReview && (
+                            </div>
+                            {/* Info */}
+                            <p className="small mb-2">2 days ago</p>
+                            <p className="mb-2">{v.description}.</p>
+                            {/* Like and dislike button */}
+                            {/* {isMyReview && (
                                 <div className="d-flex gap-2">
                                   <button
                                     className="btn btn-sm btn-primary"
@@ -1170,12 +1218,10 @@ Page content START */}
 
                                 </div>
                               )} */}
-
-                            </div>
                           </div>
-                        )
-                      })
-                      }
+                        </div>
+                      );
+                    })}
                     {isUserreview ? (
                       ""
                     ) : (
@@ -1273,7 +1319,6 @@ Page content START */}
                       </div>
                     )}
 
-                     
                     {/* <div className="mt-2">
                       <h5 className="mb-4">Leave a Review</h5>
                       <form className="row g-3">

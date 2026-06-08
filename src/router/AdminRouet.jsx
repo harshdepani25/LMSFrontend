@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Dashboard from "../Admin/Container/Dashboard/Dashboard";
 import Category from "../Admin/Container/Category/Category";
 import Layout from "../Admin/Component/Layout/Layout";
@@ -13,6 +13,29 @@ import Content from "../Admin/Container/Content/Content";
 import PrivteRouet from "./PrivteRouet";
 import Coupan from "../Admin/Container/Coupan/Coupan";
 import Blog from "../Admin/Container/Blog/Blog";
+import Tag from "../Admin/Container/Tag/Tag";
+
+// RoleProtectedRoute restricts route access based on user role (Admin vs Instructor)
+function RoleProtectedRoute({ allowedRoles, children }) {
+  const auth = localStorage.getItem("checkauth");
+  const userdata = auth && auth !== "undefined" ? JSON.parse(auth) : null;
+
+  if (!userdata) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  // If the user's role is not in the list of allowed roles for this route:
+  if (!allowedRoles.includes(userdata.role)) {
+    // If the logged-in user is an instructor, redirect them to the Courses page
+    if (userdata.role === "instructor") {
+      return <Navigate to="/admin/course" replace />;
+    }
+    // Otherwise redirect to home page
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
 
 function AdminRouet(props) {
   const Theme = useContext(ThemeContext);
@@ -34,15 +57,59 @@ function AdminRouet(props) {
       <Layout>
         <Routes>
           <Route element={<PrivteRouet />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/category" element={<Category />} />
-            <Route path="/course" element={<Course />} />
-            <Route path="/section" element={<Section />} />
-            <Route path="/content" element={<Content />} />
-            <Route path="/quiz" element={<Quiz />} />
-            <Route path="/quiz-content/:_id" element={<QuizContent />} />
-            <Route path="/coupan" element={<Coupan />} />
-             <Route path="/blog" element={<Blog />} />
+            {/* Admin-only routes */}
+            <Route path="/" element={
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <Dashboard />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/category" element={
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <Category />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/tag" element={
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <Tag />
+              </RoleProtectedRoute>
+            } />
+
+            {/* Routes shared by Admins and Instructors */}
+            <Route path="/course" element={
+              <RoleProtectedRoute allowedRoles={["admin", "instructor"]}>
+                <Course />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/section" element={
+              <RoleProtectedRoute allowedRoles={["admin", "instructor"]}>
+                <Section />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/content" element={
+              <RoleProtectedRoute allowedRoles={["admin", "instructor"]}>
+                <Content />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/quiz" element={
+              <RoleProtectedRoute allowedRoles={["admin", "instructor"]}>
+                <Quiz />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/quiz-content/:_id" element={
+              <RoleProtectedRoute allowedRoles={["admin", "instructor"]}>
+                <QuizContent />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/coupan" element={
+              <RoleProtectedRoute allowedRoles={["admin", "instructor"]}>
+                <Coupan />
+              </RoleProtectedRoute>
+            } />
+            <Route path="/blog" element={
+              <RoleProtectedRoute allowedRoles={["admin", "instructor"]}>
+                <Blog />
+              </RoleProtectedRoute>
+            } />
           </Route>
         </Routes>
       </Layout>

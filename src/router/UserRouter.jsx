@@ -21,6 +21,20 @@ import Contact from "../container/Contact/Contact.jsx";
 import Pricing from "../container/Pricing/Pricing.jsx";
 import Blog from "../container/Blog/Blog.jsx";
 import BlogDetail from "../container/Blog/BlogDetail.jsx";
+import UserDashboard from "../container/UserDashboard/UserDashboard.jsx";
+import Instructor_Create_Course from "../container/InstructorDashboard/Instructor_Create_Course.jsx";
+import Instructor_Earning from "../container/InstructorDashboard/Instructor_Earning.jsx";
+import Instructor_Order from "../container/InstructorDashboard/Instructor_Order.jsx";
+import Instructor_Payout from "../container/InstructorDashboard/Instructor_Payout.jsx";
+import Instructor_Review from "../container/InstructorDashboard/Instructor_Review.jsx";
+import Instructor_Manage_Course from "../container/InstructorDashboard/Instructor_Manage_Course.jsx";
+import Instructor_Single from "../container/InstructorDashboard/Instructor_Single.jsx";
+import Instructor_List from "../container/InstructorDashboard/Instructor_List.jsx";
+import Instructor_Student_list from "../container/InstructorDashboard/Instructor_Student_list .jsx";
+import UserCourseList from "../container/UserDashboard/UserCourseList.jsx";
+import UserPaymentInfo from "../container/UserDashboard/UserPaymentInfo.jsx";
+import UserWiishlist from "../container/UserDashboard/UserWiishlist.jsx";
+import UserEditProfile from "../container/UserDashboard/UserEditProfile.jsx";
 
 function UserRouter() {
   const themedata = useContext(ThemeContext);
@@ -49,6 +63,7 @@ function UserRouter() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:_id" element={<Blog />} />
         <Route path="/blog-details/:_id" element={<BlogDetail />} />
         <Route path="/quiz/:_id" element={<Quiz />} />
 
@@ -60,12 +75,24 @@ function UserRouter() {
           path="/course-video-player/:_id"
           element={<CourseVideoPlayer />}
         />
-        <Route element={<PrivteRouet />}>
-          <Route
-            path="/instructor-dashboard"
-            element={<InstructorDashboard />}
-          />
-        </Route>
+        <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route path="/user-course" element={<UserCourseList />} />
+        <Route path="/user-paymentinfo" element={<UserPaymentInfo />} />
+        <Route path="/user-wishlist" element={<UserWiishlist />} />
+        <Route path="/user-profilEdit" element={<UserEditProfile />} />
+
+        <Route path="/instructor-dashboard" element={<InstructorDashboard />} />
+
+        <Route path='/Instructor_Create_Course' element={<Instructor_Create_Course />}></Route>
+        <Route path='/Instructor_Create_Course/:id' element={<Instructor_Create_Course />}></Route>
+        <Route path='/Instructor_Earning' element={< Instructor_Earning />} ></Route>
+        <Route path='/Instructor_Review' element={<Instructor_Review />}></Route>
+        <Route path='/Instructor_Manage_Course' element={<Instructor_Manage_Course   />}></Route>
+        <Route path='/Instructor_Order' element={<Instructor_Order />}></Route>
+        <Route path='/Instructor_Payout' element={<Instructor_Payout />}></Route>
+        <Route path='/Instructor_Single' element={<Instructor_Single />}></Route>
+        <Route path='/Instructor_List' element={< Instructor_List />} ></Route>
+        <Route path='/Instructor_Student_list' element={<Instructor_Student_list />}></Route>
       </Routes>
       <Footer />
     </div>

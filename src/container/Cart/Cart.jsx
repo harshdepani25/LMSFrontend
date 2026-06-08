@@ -99,7 +99,6 @@ function Cart() {
 
     const order = await response?.data?.Order;
 
-    console.log("po111111111111111", order, response);
     
     // Open Razorpay Checkout
     const options = {
@@ -115,21 +114,22 @@ function Cart() {
         contact: "9601894287",
       },
       handler: async function (responce) {
-        console.log("responce", responce);
+        console.log("po111111111111111", responce);
         await verifyPayment(responce);
       }, 
       theme: {
         color: "#F37254",
       },
     };
-
+    
     const rzp = new window.Razorpay(options);
     console.log("ertyuiytrewertyu", window.Razorpay, options);
     
     rzp.open();
-
+    
     await updatecart({...cartdata, status:"compelet"})
-
+    
+    console.log("po111111111111111", order, response, options);
   };
 
   return (

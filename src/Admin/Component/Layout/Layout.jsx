@@ -29,8 +29,9 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import { useSelector } from "react-redux";
-import BookIcon from '@mui/icons-material/Book';
+import BookIcon from "@mui/icons-material/Book";
 import Blog from "../../Container/Blog/Blog";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 export default function Layout({ children }) {
   const theme = useTheme();
@@ -129,8 +130,10 @@ export default function Layout({ children }) {
   const auth = useSelector((state) => state.auth);
   console.log("checklogin", auth?.user?.data);
 
+  const userRole = auth?.user?.data?.role || auth?.user?.role;
+
   let listBox;
-  if (auth?.user?.role === "instructor") {
+  if (userRole === "instructor") {
     listBox = [
       { label: "Course", icon: <FoundationIcon />, to: "/admin/course" },
       { label: "Section", icon: <AppsIcon />, to: "/admin/section" },
@@ -156,6 +159,7 @@ export default function Layout({ children }) {
         icon: <ConfirmationNumberIcon />,
         to: "/admin/coupan",
       },
+      { label: "Tag", icon: <LocalOfferIcon />, to: "/admin/tag" },
       { label: "Blog", icon: <BookIcon />, to: "/admin/blog" },
     ];
   }

@@ -167,13 +167,53 @@ export const ResetPass = createAsyncThunk(
     }
 )
 
+export const editProfile = createAsyncThunk(
+    'user/edit-profile',
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            console.log("updatedData", data);
+
+            const formData = new FormData();
+
+            formData.append("name", data.name);
+            formData.append("phone_no", data.phone_no);
+            formData.append("about", data.about);
+            formData.append("facebookID", data.facebookID);
+            formData.append("twitterID", data.twitterID);
+            formData.append("linkedInID", data.linkedInID);
+
+            // Only append pfp if it is a File object (meaning user selected a new image)
+            if (data.pfp instanceof File) {
+                formData.append("pfp", data.pfp);
+            }
+
+            console.log("formdata", Object.fromEntries(formData.entries()));
+
+            const response = await axiosinstance.put(`user/edit-profile/${data._id}`, formData);
+            console.log(response);
+
+            if (response.data.sucess) {
+                dispatch(setalert({ text: response.data.Message, variant: "success" }))
+                return response.data.data
+            }
+
+            return response.data.data;
+        } catch (error) {
+            console.log(error);
+            const errMsg = error.response?.data?.Message || "Failed to update profile";
+            dispatch(setalert({ text: errMsg, variant: "error" }));
+            return rejectWithValue(errMsg);
+        }
+    }
+)
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     extraReducers: (builder) => {
         builder.addCase(registerUser.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.user = action.payload;
+            state.user = { data: action.payload };
             state.errors = null;
         })
         builder.addCase(registerUser.pending, (state, action) => {
@@ -189,7 +229,7 @@ const authSlice = createSlice({
 
         builder.addCase(VerifyUser.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.user = action.payload;
+            state.user = { data: action.payload };
             state.errors = null;
         })
 
@@ -207,7 +247,7 @@ const authSlice = createSlice({
 
         builder.addCase(LoginUser.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.user = action.payload;
+            state.user = { data: action.payload };
             state.errors = null;
         })
         builder.addCase(LoginUser.pending, (state, action) => {
@@ -242,7 +282,7 @@ const authSlice = createSlice({
 
         builder.addCase(LogoutUser.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.user = action.payload;
+            state.user = null;
             state.errors = null;
         })
         builder.addCase(LogoutUser.pending, (state, action) => {
@@ -250,7 +290,22 @@ const authSlice = createSlice({
             state.user = null;
             state.errors = null;
         })
+        builder.addCase(editProfile.pending, (state, action) => {
+            state.isLoading = true;
+            state.errors = null;
+        })
+        builder.addCase(editProfile.rejected, (state, action) => {
+            state.isLoading = false;
+            state.errors = action.payload;
+        })
+        builder.addCase(editProfile.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.user = { data: action.payload };
+            state.errors = null;
+        })
     }
 })
+
+
 
 export default authSlice.reducer

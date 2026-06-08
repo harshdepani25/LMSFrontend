@@ -25,6 +25,7 @@ import {
 import TextForm from "../../Component/TextForm/TextForm";
 import FileUpload from "../../Component/FileUpload/FileUpload";
 import TextEditor from "../../Component/RichTextEditor/TextEditor";
+import { useGettagQuery } from "../../../redux/Api/tag.api";
 
 function Blog(props) {
   const [open, setOpen] = useState(false);
@@ -46,6 +47,16 @@ function Blog(props) {
   const [updateData] = useUpdateBlogMutation();
 
   const [deleteData] = useDeleteBlogMutation();
+
+  const { data: tag } = useGettagQuery();
+
+  const DropData = [{ value: "", label: "--Select Tag--" }];
+
+  tag?.data?.filter((v) => {
+    DropData.push({ value: v._id, label: v.tag });
+  });
+
+  console.log(DropData);
 
   useEffect(() => {
     display();
@@ -75,6 +86,7 @@ function Blog(props) {
 
   const columns = [
     { field: "tag", headerName: "tag", width: 130 },
+
     { field: "title", headerName: "Title", width: 130 },
     { field: "description", headerName: "description", width: 200 },
     { field: "content", headerName: "content", width: 200 },
@@ -179,7 +191,19 @@ function Blog(props) {
               }}
             >
               <Form id="subscription-form">
-                <TextForm name="tag" id="tag" label="Tag" />
+                <TextForm
+                  name="tag"
+                  id="tag"
+                  select
+                  label="Select Tag"
+                  style={{ margin: "0", padding: "0" }}
+                  slotProps={{
+                    select: {
+                      native: true,
+                    },
+                  }}
+                  data={DropData}
+                />
                 <TextForm name="title" id="title" label="Title" />
                 <TextForm
                   name="description"
