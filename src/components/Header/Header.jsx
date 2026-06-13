@@ -305,12 +305,6 @@ function Header(props) {
                   Course
                 </NavLink>
               </li>
-
-              <li>
-                <NavLink className={`nav-link `} to={"/pricing"}>
-                  Pricing
-                </NavLink>
-              </li>
               <li>
                 {" "}
                 <NavLink className={`nav-link `} to={"/contact"}>
