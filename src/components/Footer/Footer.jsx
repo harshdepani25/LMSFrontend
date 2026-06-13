@@ -4,7 +4,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 function Footer(props) {
   const themedata = useContext(ThemeContext);
 
-  const isdark = themedata.theme === "light";
+  const isdark = themedata.theme === "dark";
   console.log(isdark);
 
   return (

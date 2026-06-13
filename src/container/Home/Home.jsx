@@ -8,7 +8,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 function Home(props) {
   const themedata = useContext(ThemeContext);
 
-  const isdark = themedata.theme === "light";
+  const isdark = themedata.theme === "dark";
   console.log(isdark);
 
   return (

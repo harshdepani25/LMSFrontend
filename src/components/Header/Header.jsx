@@ -19,13 +19,10 @@ function Header(props) {
 
   const themedata = useContext(ThemeContext);
 
-  const isdark = themedata.theme === "light";
+  const isdark = themedata.theme === "dark";
   console.log(isdark);
 
-  const [checked, setChecked] = React.useState(true);
-
   const handleChange = (event) => {
-    setChecked(event.target.checked);
     themedata.toggletheme(themedata.theme);
   };
 
@@ -330,7 +327,7 @@ function Header(props) {
 
             <MaterialUISwitch
               sx={{ m: 1 }}
-              defaultChecked
+              checked={themedata.theme === "dark"}
               onChange={(e) => handleChange(e)}
             />
 

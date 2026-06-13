@@ -45,7 +45,7 @@ function UserRouter() {
   }, []);
 
   return (
-    <div className={themedata.theme === "light" ? "dark" : "light"}>
+    <div className={themedata.theme}>
       <Header />
 
       <Routes>
