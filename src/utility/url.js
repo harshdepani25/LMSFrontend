@@ -1,5 +1,7 @@
-export const BASE_URL="https://lms-backend-ed6k.vercel.app/api/v2/";
-export const IMAGE_URL="https://lms-backend-ed6k.vercel.app/";
+const isDev = import.meta.env.DEV;
 
-// export const BASE_URL="http://localhost:3030/api/v2/";
-// export const IMAGE_URL="http://localhost:3030/"
+export const BASE_URL = isDev
+  ? "/api/v2/"
+  : "https://lms-backend-ed6k.vercel.app/api/v2/";
+
+export const IMAGE_URL = "https://lms-backend-ed6k.vercel.app/";
