@@ -17,6 +17,9 @@ function Course(props) {
   const auth = useSelector((state) => state.auth);
   console.log("checklogin", auth?.user?.data);
 
+  const categoryState = useSelector((state) => state.category);
+  const categories = categoryState?.category || [];
+
   const { data, error, isLoading } = useGetallcourseQuery();
   console.log(data?.data);
 
@@ -202,76 +205,91 @@ Page content START */}
                   );
                   console.log(existData);
 
-                  return (
-                    <div className="col-sm-6 col-xl-4">
-                      <a
-                        href="#"
-                        className="h6 fw-light mb-0"
-                        onClick={() => handlewhistlist(v._id)}
-                      >{
-                        existData? <FavoriteIcon /> : <FavoriteBorderIcon />
-                      }
-                        
-                      </a>
+                  const imgUrl = v.course_img?.[0]?.url || "assets/images/courses/4by3/08.jpg";
+                  const catObj = categories.find((c) => c._id === v.categories_id);
+                  const catName = catObj ? catObj.name : "";
 
+                  return (
+                    <div key={v._id} className="col-sm-6 col-md-6 col-xl-4">
                       <div
-                        className="card shadow h-100 "
+                        className="card action-trigger-hover border-0 shadow-sm rounded-3 overflow-hidden h-100 position-relative cursor-pointer"
                         onClick={() => handlecilck(v._id)}
                       >
-                        {/* Image */}
-                        <Carousel>
-                          {v.course_img.map((v, i) => (
-                            <img
-                              key={i}
-                              src={v?.url}
-                              className="card-img-top"
-                              alt="course"
-                            />
-                          ))}
-                        </Carousel>
-                        {/* Card body */}
-                        <div className="card-body pb-0">
-                          <div className="d-flex justify-content-between mb-2">
-                            <a
-                              href="#"
-                              className="badge bg-purple bg-opacity-10 text-purple"
-                            ></a>
-                            <a href="#" className="h6 fw-light mb-0">
-                              <i className="far fa-heart" />
-                            </a>
-                          </div>
-
-                          <h5 className="card-title">
-                            <a href="#">{v.name}</a>
-                          </h5>
-
-                          <p className="mb-2 text-truncate-2">
-                            {v.description}
-                          </p>
-
-                          {/* Rating */}
-                          <ul className="list-inline mb-0">
-                            <li className="list-inline-item me-0 small">
-                              <i className="fas fa-star text-warning" />
-                            </li>
-                            <li className="list-inline-item ms-2 h6 fw-light mb-0">
-                              4.0/5.0
-                            </li>
-                          </ul>
+                        {/* Image overlay block */}
+                        <div className="position-relative overflow-hidden" style={{ height: "200px" }}>
+                          <img
+                            src={imgUrl}
+                            className="card-img-top w-100 h-100 object-fit-cover"
+                            alt={v.name}
+                            style={{ transition: "transform 0.4s ease" }}
+                          />
+                          {/* Category Badge overlay */}
+                          {catName && (
+                            <span className="badge bg-primary bg-opacity-10 text-primary position-absolute top-0 start-0 m-3 z-index-2">
+                              {catName}
+                            </span>
+                          )}
+                          {/* Wishlist Button Overlay */}
+                          <button
+                            className="btn btn-sm btn-white shadow rounded-circle position-absolute top-0 end-0 m-3 z-index-2 d-flex align-items-center justify-content-center"
+                            style={{ width: "34px", height: "34px", border: "none" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlewhistlist(v._id);
+                            }}
+                          >
+                            {existData ? (
+                              <FavoriteIcon className="text-danger" style={{ fontSize: "18px" }} />
+                            ) : (
+                              <FavoriteBorderIcon className="text-muted" style={{ fontSize: "18px" }} />
+                            )}
+                          </button>
                         </div>
 
-                        {/* Footer */}
-                        <div className="card-footer pt-0 pb-3">
-                          <hr />
-                          <div className="d-flex justify-content-between">
-                            <span className="h6 fw-light mb-0">
-                              <i className="far fa-clock text-danger me-2" />
-                              12h 56m
-                            </span>
-                            <span className="h6 fw-light mb-0">
-                              <i className="fas fa-table text-orange me-2" />
-                              15 lectures
-                            </span>
+                        {/* Card body */}
+                        <div className="card-body p-4 d-flex flex-column justify-content-between">
+                          <div>
+                            {/* Title */}
+                            <h5 className="card-title fw-semibold text-dark hover-primary mb-2 line-clamp-2">
+                              {v.name}
+                            </h5>
+
+                            {/* Description */}
+                            <p className="card-text text-muted mb-3 line-clamp-2 small">
+                              {v.description || v.desciption}
+                            </p>
+
+                            {/* Rating */}
+                            <div className="d-flex align-items-center mb-3">
+                              <ul className="list-inline mb-0 me-2 small">
+                                <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                <li className="list-inline-item me-0"><i className="fas fa-star text-warning" /></li>
+                                <li className="list-inline-item me-0"><i className="far fa-star text-warning" /></li>
+                              </ul>
+                              <span className="small text-muted fw-light">(4.0)</span>
+                            </div>
+                          </div>
+
+                          {/* Footer */}
+                          <div>
+                            <hr className="my-2 opacity-1" />
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="hstack gap-3 text-muted small">
+                                <span>
+                                  <i className="far fa-clock text-danger me-1" />
+                                  {v.duration || "12h 56m"}
+                                </span>
+                                <span>
+                                  <i className="fas fa-table text-orange me-1" />
+                                  15 lectures
+                                </span>
+                              </div>
+                              <span className="h6 text-success mb-0 fw-bold">
+                                {v.fees === 0 || !v.fees ? "Free" : `$${v.fees}`}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>

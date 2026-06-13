@@ -496,4 +496,9 @@ html[data-theme="dark"] .dropdown-menu .dropdown-menu {
   transition: all 0.2s ease;
 }
 
+/* Card image scale transition on hover */
+.card.action-trigger-hover:hover .card-img-top {
+  transform: scale(1.05);
+}
+
 
